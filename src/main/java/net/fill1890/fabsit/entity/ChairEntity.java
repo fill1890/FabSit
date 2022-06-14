@@ -1,8 +1,11 @@
 package net.fill1890.fabsit.entity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -40,10 +43,13 @@ public class ChairEntity extends ArmorStandEntity {
     public void tick() {
         if(used && getPassengerList().size() < 1) { kill(); }
 
-        Entity passenger = this.getFirstPassenger();
-        if(passenger != null) {
-            this.setYaw(passenger.getHeadYaw());
+        ServerPlayerEntity player = (ServerPlayerEntity) this.getFirstPassenger();
+        if(player != null) {
+            this.setYaw(player.getHeadYaw());
         }
+
+        BlockState sittingBlock = getEntityWorld().getBlockState(new BlockPos(getPos()).up());
+        if(sittingBlock.isAir()) { kill(); }
 
         super.tick();
     }
