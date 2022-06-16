@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.fill1890.fabsit.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "PlayerAccessor",
+    "EntityAccessor",
+    "LivingEntityAccessor"
+  ]
+}
