@@ -4,8 +4,9 @@
   "package": "net.fill1890.fabsit.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "PlayerAccessor",
+    "PlayerEntityAccessor",
     "EntityAccessor",
-    "LivingEntityAccessor"
+    "LivingEntityAccessor",
+    "ServerPlayNetworkHandlerMixin"
   ]
 }
