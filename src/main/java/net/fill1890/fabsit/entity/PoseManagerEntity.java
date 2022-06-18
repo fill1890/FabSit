@@ -26,11 +26,13 @@ import static net.fill1890.fabsit.mixin.PlayerEntityAccessor.getRIGHT_SHOULDER_E
  * If needed, the player will then be made invisible and an NPC spawned to pose instead
  */
 public class PoseManagerEntity extends ArmorStandEntity {
+    // has the seat been used - checked for removing later
     private boolean used = false;
     private final Pose pose;
+    // visible npc for posing (if needed)
     private PosingEntity poser;
 
-    public PoseManagerEntity(World world, Vec3d pos, float yaw, Pose pose, ServerPlayerEntity player) {
+    public PoseManagerEntity(World world, Vec3d pos, Pose pose, ServerPlayerEntity player) {
         // create a new armour stand at the appropriate height
         // TODO: no magic numbers
         super(world, pos.x, pos.y - 1.6, pos.z);
@@ -39,7 +41,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
         this.setInvulnerable(true);
         this.setCustomName(Text.of("FABSEAT"));
         this.setNoGravity(true);
-        this.setYaw(yaw);
+        this.setYaw(player.getYaw()); // TODO: test this properly
 
         // if the pose is more complex than sitting, create a posing npc
         if(pose == Pose.LAYING) {
@@ -62,7 +64,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
             passenger.setInvisible(true);
 
             // update shoulder entities
-            // parrots and such, I think
+            // parrots and such
+            // TODO: this should probably be updated in PosingEntity
             this.poser.getDataTracker().set(getLEFT_SHOULDER_ENTITY(), passenger.getDataTracker().get(getLEFT_SHOULDER_ENTITY()));
             this.poser.getDataTracker().set(getRIGHT_SHOULDER_ENTITY(), passenger.getDataTracker().get(getRIGHT_SHOULDER_ENTITY()));
             passenger.getDataTracker().set(getLEFT_SHOULDER_ENTITY(), new NbtCompound());

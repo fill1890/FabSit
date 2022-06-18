@@ -11,7 +11,6 @@ import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 
 import java.util.Optional;
 
@@ -53,8 +52,7 @@ public class LayingEntity extends PosingEntity {
         BlockState old = this.getEntityWorld().getBlockState(bedPos);
 
         // update bed facing direction to match player
-        Direction direction = this.getCardinal(player.getHeadYaw());
-        bed = bed.with(BedBlock.FACING, direction.getOpposite());
+        bed = bed.with(BedBlock.FACING, this.initialDirection.getOpposite());
 
         // raise pose position to lie on the ground rather than in it
         this.setPosition(player.getX(), player.getY() + 0.1, player.getZ());

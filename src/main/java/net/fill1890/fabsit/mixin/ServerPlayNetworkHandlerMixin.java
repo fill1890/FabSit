@@ -16,6 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow public ServerPlayerEntity player;
 
+    // Hijack client -> server animation packets
+    // If the packet is an animation and the player is posing, transmit the same animation
+    // from the posing npc
     @Inject(method = "onHandSwing", at = @At("HEAD"))
     private void copyHandSwing(HandSwingC2SPacket packet, CallbackInfo ci) {
         if(this.player.hasVehicle()) {

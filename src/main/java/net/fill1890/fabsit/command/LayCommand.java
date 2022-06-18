@@ -19,7 +19,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 /**
  * /lay command implementation
  * <br>
- * Requires <code>fabsit.lay</code> permission node, granted to all players by default
+ * Requires <code>fabsit.commands.lay</code> permission node, granted to all players by default
  * <br>
  * Implementation details taken from <a href="https://github.com/Gecolay/GSit">GSit</a>
  */
@@ -41,13 +41,16 @@ public class LayCommand {
             return -1;
         }
 
+        // toggle sitting if the player was sat down
         if(player.hasVehicle()) {
             player.dismountVehicle();
             player.teleport(player.getX(), player.getY() + 0.6, player.getZ());
             return 1;
         }
 
+        // get the block below to check it isn't air
         BlockState standingBlock = player.getEntityWorld().getBlockState(new BlockPos(player.getPos()).down());
+        // check cancel conditions
         if(
                 player.isFallFlying()
                 || player.isSleeping()
@@ -56,12 +59,9 @@ public class LayCommand {
                 || standingBlock.isAir()
         ) { return -1; }
 
-        float yaw = player.getYaw();
-        yaw = (yaw % 360 + 360) % 360;
-
         // create a new pose manager for laying and sit the player down
         // (player is then invisible and an npc lays down)
-        PoseManagerEntity chair = new PoseManagerEntity(player.getEntityWorld(), player.getPos(), yaw, Pose.LAYING, player);
+        PoseManagerEntity chair = new PoseManagerEntity(player.getEntityWorld(), player.getPos(), Pose.LAYING, player);
         player.getEntityWorld().spawnEntity(chair);
         player.startRiding(chair, true);
 

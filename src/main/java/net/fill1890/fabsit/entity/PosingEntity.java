@@ -24,13 +24,12 @@ import static net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action.R
  * <br>
  * As a super class, will handle creating an NPC, setting the skin,
  * spawning into the world and removing from the world, visually
- * removing and adding hotbar items
+ * removing and adding equipment
  * <br>
  * Do not spawn posing entities in directly as they are server only
  * and will not tick or die correctly; instead use a ticking manager
  * and call sendUpdates() and destroy()
  * <br>
- * TODO: head rotation
  */
 public abstract class PosingEntity extends ServerPlayerEntity {
     // add poser to the tablist
@@ -49,7 +48,8 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     // list of players that need the poser removed from the tablist
     private final List<net.minecraft.util.Pair<ServerPlayerEntity, Integer>> delayedRemoves = new ArrayList<>();
 
-    Direction initialDirection;
+    // initial facing direction of the player
+    protected Direction initialDirection;
 
     // Set of players currently being added; use for initial setup
     protected final Set<ServerPlayerEntity> addingPlayers = new HashSet<>();
@@ -62,7 +62,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
      * Create a new EntityPoser
      *
      * @param player player to base poser on
-     * @param gameProfile game profile of player
+     * @param gameProfile game profile of player (should have different UUID)
      */
     public PosingEntity(ServerPlayerEntity player, GameProfile gameProfile) {
         super(player.server, player.getWorld(), gameProfile, null);
@@ -80,9 +80,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         // set the poser position
         this.setPosition(player.getPos());
 
-        // get the initial yaw normalised 0-360
-        //this.initialYaw = Math.round(player.getHeadYaw()) + 180;
-
+        // set up direction
         this.initialDirection = getCardinal(player.getHeadYaw());
 
         // adds the poser to the tablist so minecraft shows the player
@@ -131,6 +129,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
                 });
 
         this.addingPlayers.forEach(p -> {
+            // set players up initially
             p.networkHandler.sendPacket(this.addPoserPacket);
             p.networkHandler.sendPacket(this.spawnPoserPacket);
             p.networkHandler.sendPacket(this.trackerPoserPacket);
