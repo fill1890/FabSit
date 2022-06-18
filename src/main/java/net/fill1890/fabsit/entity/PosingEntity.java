@@ -19,27 +19,34 @@ import static net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action.A
 import static net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action.REMOVE_PLAYER;
 
 /**
- * The PosingEntity class gives a generic entity for posing
+ * The PosingEntity class gives a generic entity for posing <br>
  * It is assumed that the entity will visually replace the player
- *
+ * <br>
  * As a super class, will handle creating an NPC, setting the skin,
- *  spawning into the world and removing from the world, visually
- *  removing and adding hotbar items
- *
+ * spawning into the world and removing from the world, visually
+ * removing and adding hotbar items
+ * <br>
  * Do not spawn posing entities in directly as they are server only
  * and will not tick or die correctly; instead use a ticking manager
  * and call sendUpdates() and destroy()
- *
+ * <br>
  * TODO: head rotation
  */
 public abstract class PosingEntity extends ServerPlayerEntity {
+    // add poser to the tablist
     private final PlayerListS2CPacket addPoserPacket;
+    // remove poser from the tablist
     private final PlayerListS2CPacket removePoserPacket;
+    // spawn poser in the world
     private final PlayerSpawnS2CPacket spawnPoserPacket;
+    // remove poser from the world
     private final EntitiesDestroyS2CPacket despawnPoserPacket;
+    // send poser metadata
     protected EntityTrackerUpdateS2CPacket trackerPoserPacket;
 
+    // player posing
     protected final ServerPlayerEntity player;
+    // list of players that need the poser removed from the tablist
     private final List<net.minecraft.util.Pair<ServerPlayerEntity, Integer>> delayedRemoves = new ArrayList<>();
 
     protected int yawOffset;
@@ -62,16 +69,17 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
         this.player = player;
 
-        this.setCustomNameVisible(false); // doesnt do anything? hmm
-        this.setInvulnerable(true); // double check this later
+        // poser shouldn't take damage
+        // TODO: should this be changed to make the player invulnerable? so hit boxes are correct
+        this.setInvulnerable(true);
 
         // update the player skin - uses a mixin to access private fields of PlayerEntity and superclasses
         // TODO: skin outer layer missing?
         this.getDataTracker().set(getPLAYER_MODEL_PARTS(), player.getDataTracker().get(getPLAYER_MODEL_PARTS()));
         this.getDataTracker().set(getMAIN_ARM(), player.getDataTracker().get(getMAIN_ARM()));
 
+        // set the poser position
         this.setPosition(player.getPos());
-
 
         // adds the poser to the tablist so minecraft shows the player
         this.addPoserPacket = new PlayerListS2CPacket(ADD_PLAYER, this);
@@ -87,11 +95,11 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
     /**
      * Request the entity to send packet updates to nearby players
-     *
+     * <br>
      * Will keep track of players close enough to register (<250 blocks) and
      * able to see the player; will send packets to add the player when they
      * are visible and remove the player when not visible
-     *
+     * <br>
      * Subclasses should override and call super.sendUpdates() before performing
      * pose-specific packet updates
      */
@@ -148,7 +156,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
     /**
      * Sync the NPC equipment with the given player
-     *
+     * <br>
      * Will update visible equipment for both the NPC and player for all nearby
      * players, except the player being synced
      */
@@ -158,7 +166,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
     /**
      * Desync NPC equipment
-     *
+     * <br>
      * Restores player equipment and removes from the NPC
      */
     protected void desyncInventories() {
@@ -173,11 +181,13 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         List<Pair<EquipmentSlot, ItemStack>> emptySlots = new ArrayList<>();
         List<Pair<EquipmentSlot, ItemStack>> playerSlots = new ArrayList<>();
 
+        // set up a list of empty slots and a list of the player's equipped slots
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             emptySlots.add(new Pair<>(slot, ItemStack.EMPTY));
             playerSlots.add(new Pair<>(slot, player.getEquippedStack(slot)));
         }
 
+        // set up empty & equipped packets for player & poser
         emptyPlayerPacket = new EntityEquipmentUpdateS2CPacket(player.getId(), emptySlots);
         emptyNpcPacket = new EntityEquipmentUpdateS2CPacket(this.getId(), emptySlots);
         equippedPlayerPacket = new EntityEquipmentUpdateS2CPacket(player.getId(), playerSlots);
@@ -211,35 +221,42 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         }
     }
 
+    /**
+     * Animate the poser
+     *
+     * @param id animation id from EntityAnimationS2CPacket
+     */
     public void animate(int id) {
-        if(id == EntityAnimationS2CPacket.SWING_MAIN_HAND) {
+        if(id == EntityAnimationS2CPacket.SWING_MAIN_HAND || id == EntityAnimationS2CPacket.SWING_OFF_HAND) {
             EntityAnimationS2CPacket animatePacket = new EntityAnimationS2CPacket(this, id);
 
             this.updatingPlayers.forEach(p -> p.networkHandler.sendPacket(animatePacket));
         }
     }
 
+    /**
+     * Get the cardinal direction for a given head yaw
+     *
+     * @param yaw yaw from -180 to 180 degrees
+     * @return cardinal direction
+     */
     public Direction getCardinal(float yaw) {
-        Direction direction;
-
         if(yaw >= -45 && yaw <= 45) {
-            direction = Direction.SOUTH;
+            return Direction.SOUTH;
         } else if(yaw > 45 && yaw <= 135) {
-            direction = Direction.WEST;
+            return Direction.WEST;
         } else if(yaw >= -135 && yaw < -45) {
-            direction = Direction.EAST;
+            return Direction.EAST;
         } else {
-            direction = Direction.NORTH;
+            return Direction.NORTH;
         }
-
-        return direction;
     }
 
     /**
      * Destroy the posing entity
-     *
+     * <br>
      * Call similarly to kill()
-     *
+     * <br>
      * Subclasses should override and call super.destroy() after performing any pose-specific
      * breaking down
      */
@@ -258,6 +275,14 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     @Override
     public void kill() {
         this.destroy();
+    }
+
+    /**
+     * Entity should not be spawned server side
+     */
+    @Override
+    public void onSpawn() {
+        throw new RuntimeException("Posing entities should not be spawned!");
     }
 
     @Override

@@ -16,10 +16,10 @@ import net.minecraft.util.math.BlockPos;
 
 /**
  * /sit command implementation
- *
- * Requires fabsit.sit permission node; granted to all players by default
- *
- * Inspiration taken from Fabric Sit (https://github.com/BradBot1/FabricSit)
+ * <br>
+ * Requires <code>fabsit.sit</code> permission node; granted to all players by default
+ * <br>
+ * Inspiration taken from <a href="https://github.com/BradBot1/FabricSit">Fabric Sit</a>
  */
 public class SitCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {

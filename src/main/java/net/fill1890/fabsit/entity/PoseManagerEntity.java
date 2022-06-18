@@ -18,10 +18,11 @@ import static net.fill1890.fabsit.mixin.PlayerEntityAccessor.getRIGHT_SHOULDER_E
 
 /**
  * The PoseManagerEntity provides an interface to a variety of posing actions, currently:
- *  entity.Pose.SITTING
- *  entity.Pose.LAYING
- *
+ * <pre>entity.Pose.SITTING</pre>
+ * <pre>entity.Pose.LAYING</pre>
+ * <br>
  * The manager spawns in invisible armour stand for the player to ride to sit
+ * <br>
  * If needed, the player will then be made invisible and an NPC spawned to pose instead
  */
 public class PoseManagerEntity extends ArmorStandEntity {

@@ -20,19 +20,21 @@ import static net.fill1890.fabsit.mixin.LivingEntityAccessor.getSLEEPING_POSITIO
 
 /**
  * Laying entity
- *
+ * <br>
  * Subclasses posing entity and implements a sleeping pose
- *
+ * <br>
  * Note that to do this, a bed is inserted into the bottom of the world (bedrock in the overworld or
- *  nether, void in the end) client-side and set as the poser's bed. This is packet-based only
+ * nether, void in the end) client-side and set as the poser's bed. This is packet-based only
  * and does not affect the world server-side, and is reset when the pose is left
  */
 public class LayingEntity extends PosingEntity {
+    // replace a block with a bed
     private final BlockUpdateS2CPacket addBedPacket;
+    // revert bed replacement
     private final BlockUpdateS2CPacket removeBedPacket;
+    // teleport the poser to the correct location
     private final EntityPositionS2CPacket teleportPoserPacket;
 
-    // TODO: line up bed facing direction with player
     public LayingEntity(ServerPlayerEntity player, GameProfile profile) {
         super(player, profile);
 
@@ -57,9 +59,7 @@ public class LayingEntity extends PosingEntity {
         // raise pose position to lie on the ground rather than in it
         this.setPosition(player.getX(), player.getY() + 0.1, player.getZ());
 
-        // change the new bed block to a bed
         this.addBedPacket = new BlockUpdateS2CPacket(bedPos, bed);
-        // reset to the original block
         this.removeBedPacket = new BlockUpdateS2CPacket(bedPos, old);
         // teleport the poser from the bed to the player, as the poser
         // spawns on the bed (mojang moment)
@@ -74,12 +74,15 @@ public class LayingEntity extends PosingEntity {
         super.sendUpdates();
 
         this.addingPlayers.forEach(p -> {
+            // add the bed to the world
             p.networkHandler.sendPacket(addBedPacket);
             // refresh metadata now that the bed exists
             p.networkHandler.sendPacket(trackerPoserPacket);
+            // teleport the poser to the surface
             p.networkHandler.sendPacket(teleportPoserPacket);
         });
 
+        // reset bed blocks after posing
         this.removingPlayers.forEach(p -> p.networkHandler.sendPacket(removeBedPacket));
     }
 

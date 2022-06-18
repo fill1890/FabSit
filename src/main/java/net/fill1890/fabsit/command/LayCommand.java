@@ -18,10 +18,10 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 /**
  * /lay command implementation
- *
- * Required fabsit.lay permission node, granted to all players by default
- *
- * Implementation details taken from GSit (https://github.com/Gecolay/GSit)
+ * <br>
+ * Requires <code>fabsit.lay</code> permission node, granted to all players by default
+ * <br>
+ * Implementation details taken from <a href="https://github.com/Gecolay/GSit">GSit</a>
  */
 public class LayCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
