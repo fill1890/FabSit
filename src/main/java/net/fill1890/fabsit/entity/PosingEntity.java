@@ -49,7 +49,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     // list of players that need the poser removed from the tablist
     private final List<net.minecraft.util.Pair<ServerPlayerEntity, Integer>> delayedRemoves = new ArrayList<>();
 
-    protected int yawOffset;
+    Direction initialDirection;
 
     // Set of players currently being added; use for initial setup
     protected final Set<ServerPlayerEntity> addingPlayers = new HashSet<>();
@@ -80,6 +80,11 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
         // set the poser position
         this.setPosition(player.getPos());
+
+        // get the initial yaw normalised 0-360
+        //this.initialYaw = Math.round(player.getHeadYaw()) + 180;
+
+        this.initialDirection = getCardinal(player.getHeadYaw());
 
         // adds the poser to the tablist so minecraft shows the player
         this.addPoserPacket = new PlayerListS2CPacket(ADD_PLAYER, this);
@@ -151,7 +156,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         removed.forEach(this.delayedRemoves::remove);
 
         this.syncInventories();
-        //this.syncHeadYaw();
+        this.syncHeadYaw();
     }
 
     /**
@@ -213,10 +218,39 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     // TODO: finish implementation
     protected void syncHeadYaw() {
         if(player.headYaw != player.prevHeadYaw) {
-            //System.out.println("new yaw: " + player.headYaw);
-            int newYaw = Math.min(Math.max(Math.round(player.headYaw), -35), 90);
-            EntitySetHeadYawS2CPacket headYawPacket = new EntitySetHeadYawS2CPacket(this, (byte) newYaw);
+            // yaw is usually from -180 to 180, with the break at north,
+            // 0 at south, east at -90, and west at 90
+            // so we take the head yaw, change the key (0) to the initial direction,
+            // then adjust for the break so we have a clean measurement of
+            // -180 to 180
 
+            int yaw;
+            if(initialDirection == Direction.SOUTH) {
+                // already reasonable values (key at 0)
+                yaw = Math.round(player.getHeadYaw());
+            } else if(initialDirection == Direction.EAST) {
+                // key at -90
+                // becomes 0, 90, 180, 270/-90
+                yaw = Math.round(player.getHeadYaw()) + 90;
+                yaw = yaw > 180 ? yaw - 360 : yaw;
+            } else if(initialDirection == Direction.WEST) {
+                // key at 90
+                // becomes 0, 90/-270, -180, -90
+                yaw = Math.round(player.getHeadYaw()) - 90;
+                yaw = yaw < -180 ? yaw + 360 : yaw;
+            } else {
+                // key at 180/-180; reverse and compensate
+                yaw = Math.round(player.getHeadYaw());
+                yaw = yaw > 0 ? yaw - 180 : yaw + 180;
+            }
+
+            // constrain to -30 to 80 degrees - seems to be correct, not sure why there's an offset
+            yaw = Math.min(Math.max(yaw, -30), 80);
+
+            // copied from gsit - something to do with the byte conversion?
+            int newYaw = yaw * 256 / 360;
+
+            EntitySetHeadYawS2CPacket headYawPacket = new EntitySetHeadYawS2CPacket(this, (byte) yaw);
             this.updatingPlayers.forEach(p -> p.networkHandler.sendPacket(headYawPacket));
         }
     }
