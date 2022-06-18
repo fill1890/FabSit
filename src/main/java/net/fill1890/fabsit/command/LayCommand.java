@@ -26,7 +26,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class LayCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
        dispatcher.register(literal("lay")
-               .requires(Permissions.require("fabsit.lay", true))
+               .requires(Permissions.require("fabsit.commands.lay", true))
                .executes(LayCommand::run));
     }
 
