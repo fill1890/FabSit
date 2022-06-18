@@ -65,7 +65,7 @@ public class LayingEntity extends PosingEntity {
         // spawns on the bed (mojang moment)
         this.teleportPoserPacket = new EntityPositionS2CPacket(this);
         // refresh metadata so the bed is assigned correctly
-        this.trackerPoserPacket = new EntityTrackerUpdateS2CPacket(this.getId(), this.getDataTracker(), false);
+        this.trackerPoserPacket = new EntityTrackerUpdateS2CPacket(this.getId(), this.getDataTracker(), true);
 
     }
 

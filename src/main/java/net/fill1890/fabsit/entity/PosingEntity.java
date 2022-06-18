@@ -74,7 +74,6 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         this.setInvulnerable(true);
 
         // update the player skin - uses a mixin to access private fields of PlayerEntity and superclasses
-        // TODO: skin outer layer missing?
         this.getDataTracker().set(getPLAYER_MODEL_PARTS(), player.getDataTracker().get(getPLAYER_MODEL_PARTS()));
         this.getDataTracker().set(getMAIN_ARM(), player.getDataTracker().get(getMAIN_ARM()));
 
@@ -95,7 +94,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         // despawn the poser
         this.despawnPoserPacket = new EntitiesDestroyS2CPacket(this.getId());
         // update the poser metadata
-        this.trackerPoserPacket = new EntityTrackerUpdateS2CPacket(this.getId(), this.getDataTracker(), false);
+        this.trackerPoserPacket = new EntityTrackerUpdateS2CPacket(this.getId(), this.getDataTracker(), true);
     }
 
     /**
@@ -215,40 +214,32 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         });
     }
 
-    // TODO: finish implementation
     protected void syncHeadYaw() {
         if(player.headYaw != player.prevHeadYaw) {
             // yaw is usually from -180 to 180, with the break at north,
             // 0 at south, east at -90, and west at 90
             // so we take the head yaw, change the key (0) to the initial direction,
-            // then adjust for the break so we have a clean measurement of
-            // -180 to 180
+            // then adjust for the break so we have a clean measurement of -180 to 180
 
-            int yaw;
-            if(initialDirection == Direction.SOUTH) {
-                // already reasonable values (key at 0)
-                yaw = Math.round(player.getHeadYaw());
+            int yaw = Math.round(player.getHeadYaw());
+
+            if(initialDirection == Direction.NORTH) {
+                // key at 180/-180
+                yaw = yaw > 0 ? yaw - 180 : yaw + 180;
             } else if(initialDirection == Direction.EAST) {
                 // key at -90
                 // becomes 0, 90, 180, 270/-90
-                yaw = Math.round(player.getHeadYaw()) + 90;
+                yaw += 90;
                 yaw = yaw > 180 ? yaw - 360 : yaw;
             } else if(initialDirection == Direction.WEST) {
                 // key at 90
                 // becomes 0, 90/-270, -180, -90
-                yaw = Math.round(player.getHeadYaw()) - 90;
+                yaw -= 90;
                 yaw = yaw < -180 ? yaw + 360 : yaw;
-            } else {
-                // key at 180/-180; reverse and compensate
-                yaw = Math.round(player.getHeadYaw());
-                yaw = yaw > 0 ? yaw - 180 : yaw + 180;
             }
 
-            // constrain to -30 to 80 degrees - seems to be correct, not sure why there's an offset
-            yaw = Math.min(Math.max(yaw, -30), 80);
-
-            // copied from gsit - something to do with the byte conversion?
-            int newYaw = yaw * 256 / 360;
+            // TODO: are these values accurate? some testing has weird angles
+            yaw = Math.min(Math.max(yaw, -60), 60);
 
             EntitySetHeadYawS2CPacket headYawPacket = new EntitySetHeadYawS2CPacket(this, (byte) yaw);
             this.updatingPlayers.forEach(p -> p.networkHandler.sendPacket(headYawPacket));
