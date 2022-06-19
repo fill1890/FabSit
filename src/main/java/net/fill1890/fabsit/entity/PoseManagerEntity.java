@@ -32,6 +32,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
     // visible npc for posing (if needed)
     private PosingEntity poser;
 
+    protected boolean killing;
+
     public PoseManagerEntity(World world, Vec3d pos, Pose pose, ServerPlayerEntity player) {
         // create a new armour stand at the appropriate height
         // TODO: no magic numbers
@@ -110,6 +112,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
     @Override
     public void kill() {
+        this.killing = true;
+
         // if the pose was npc-based, remove the npc
         if(poser != null) {
             poser.destroy();
@@ -120,8 +124,10 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
     @Override
     public void tick() {
+        if(this.killing) return;
+
         // kill when the player stops posing
-        if(used && getPassengerList().size() < 1) { this.kill(); }
+        if(used && getPassengerList().size() < 1) { this.kill(); return; }
 
         // rotate the armour stand with the player so the player's legs line up
         ServerPlayerEntity player = (ServerPlayerEntity) this.getFirstPassenger();
@@ -131,7 +137,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
         // stop the player sitting if the block below is broken
         BlockState sittingBlock = getEntityWorld().getBlockState(new BlockPos(getPos()).up());
-        if(sittingBlock.isAir()) { kill(); }
+        if(sittingBlock.isAir()) { kill(); return; }
 
         // if pose is npc-based, update players with npc info
         if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
