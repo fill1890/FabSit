@@ -14,4 +14,7 @@ public interface LivingEntityAccessor {
     static TrackedData<Optional<BlockPos>> getSLEEPING_POSITION() {
         throw new AssertionError();
     }
+
+    @Accessor("LIVING_FLAGS")
+    static TrackedData<Byte> getLIVING_FLAGS() { throw new AssertionError(); }
 }

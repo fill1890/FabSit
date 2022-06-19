@@ -44,12 +44,13 @@ public class PoseManagerEntity extends ArmorStandEntity {
         this.setYaw(player.getYaw()); // TODO: test this properly
 
         // if the pose is more complex than sitting, create a posing npc
-        if(pose == Pose.LAYING) {
+        if(pose == Pose.LAYING || pose == Pose.SPINNING) {
             // copy player game profile with a random uuid
             GameProfile gameProfile = new GameProfile(UUID.randomUUID(), player.getEntityName());
             gameProfile.getProperties().putAll(player.getGameProfile().getProperties());
 
-            this.poser = new LayingEntity(player, gameProfile);
+            if(pose == Pose.LAYING) this.poser = new LayingEntity(player, gameProfile);
+            if(pose == Pose.SPINNING) this.poser = new SpinningEntity(player, gameProfile);
         }
 
         this.pose = pose;
@@ -60,7 +61,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
         super.addPassenger(passenger);
 
         // if the pose is npc-based, hide the player when initiated
-        if(this.pose == Pose.LAYING) {
+        if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
             passenger.setInvisible(true);
 
             // update shoulder entities
@@ -80,7 +81,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
         super.removePassenger(passenger);
 
         // if the pose was npc-based, show the player again when exited
-        if(this.pose == Pose.LAYING) {
+        if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
             passenger.setInvisible(false);
 
             // replace shoulder entities
@@ -92,7 +93,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
     }
 
     public void animate(int id) {
-        if(this.pose == Pose.LAYING) {
+        if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
             poser.animate(id);
         }
     }
@@ -133,7 +134,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
         if(sittingBlock.isAir()) { kill(); }
 
         // if pose is npc-based, update players with npc info
-        if(this.pose == Pose.LAYING) {
+        if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
             poser.sendUpdates();
         }
 

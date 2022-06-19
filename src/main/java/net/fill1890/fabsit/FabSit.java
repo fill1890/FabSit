@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fill1890.fabsit.command.LayCommand;
 import net.fill1890.fabsit.command.SitCommand;
+import net.fill1890.fabsit.command.SpinCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,7 @@ public class FabSit implements ModInitializer {
 	public void onInitialize() {
 		CommandRegistrationCallback.EVENT.register(SitCommand::register);
 		CommandRegistrationCallback.EVENT.register(LayCommand::register);
+		CommandRegistrationCallback.EVENT.register(SpinCommand::register);
 		
 		LOGGER.info("FabSit finished loading");
 	}
