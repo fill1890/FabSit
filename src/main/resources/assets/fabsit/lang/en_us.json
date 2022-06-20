@@ -1,0 +1,12 @@
+{
+  "chat.fabsit.stop_spinning": "Press %s to stop spinning",
+  "chat.fabsit.stop_laying": "Press %s to stand up",
+  "chat.fabsit.stop_sitting": "Press %s to stand up",
+
+  "chat.fabsit.sit_air_error": "§4You can't sit in midair!",
+  "chat.fabsit.pose_air_error": "§4You can't pose in midair!",
+  "chat.fabsit.sit_spectator_error": "§4You can't sit while spectating!",
+  "chat.fabsit.pose_spectator_error": "§4You can't pose while spectating!",
+  "chat.fabsit.sit_state_error": "§4You can't sit right now!",
+  "chat.fabsit.pose_state_error": "§4You can't pose right now!"
+}

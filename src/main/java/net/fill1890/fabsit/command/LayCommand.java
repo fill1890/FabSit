@@ -6,6 +6,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fill1890.fabsit.entity.Pose;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
+import net.fill1890.fabsit.error.PoseException;
+import net.fill1890.fabsit.util.PoseTest;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
@@ -48,16 +50,10 @@ public class LayCommand {
             return 1;
         }
 
-        // get the block below to check it isn't air
-        BlockState standingBlock = player.getEntityWorld().getBlockState(new BlockPos(player.getPos()).down());
-        // check cancel conditions
-        if(
-                player.isFallFlying()
-                || player.isSleeping()
-                || player.isSwimming()
-                || player.isSpectator()
-                || standingBlock.isAir()
-        ) { return -1; }
+        // confirm player can pose right now
+        try {
+            PoseTest.confirmPosable(player, Pose.LAYING);
+        } catch (PoseException ignored) { return -1; }
 
         // create a new pose manager for laying and sit the player down
         // (player is then invisible and an npc lays down)
