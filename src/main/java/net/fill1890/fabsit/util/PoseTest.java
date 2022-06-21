@@ -1,5 +1,7 @@
 package net.fill1890.fabsit.util;
 
+import net.fill1890.fabsit.config.Config;
+import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.Pose;
 import net.fill1890.fabsit.error.PoseException;
 import net.minecraft.block.BlockState;
@@ -25,12 +27,17 @@ public interface PoseTest {
             throw new PoseException.SpectatorException();
         }
 
+        // check if underwater
+        if(player.isInsideWaterOrBubbleColumn() && !ConfigManager.getConfig().allow_posing_underwater) {
+            player.sendMessage(Messages.getStateError(pose));
+            throw new PoseException.StateException();
+        }
+
         // check if flying, swimming, sleeping, or underwater
         if(
                 player.isFallFlying()
                 || player.isSwimming()
-                || player.isSleeping()
-                || player.isInsideWaterOrBubbleColumn())
+                || player.isSleeping())
         {
             player.sendMessage(Messages.getStateError(pose));
             throw new PoseException.StateException();
@@ -39,9 +46,22 @@ public interface PoseTest {
         BlockState below = player.getEntityWorld().getBlockState(new BlockPos(player.getPos()).down());
 
         // check if in midair
-        if(below.isAir()) {
+        if(below.isAir() && !ConfigManager.getConfig().allow_posing_midair) {
             player.sendMessage(Messages.getMidairError(pose));
             throw new PoseException.MidairException();
         }
+    }
+
+    static boolean confirmEnabled(ServerPlayerEntity player, Pose pose) {
+        Config.Poses poses = ConfigManager.getConfig().allow_poses;
+        boolean allowed = switch (pose) {
+            case LAYING -> poses.lay;
+            case SPINNING -> poses.spin;
+            case SITTING -> poses.sit;
+        };
+
+        if(!allowed) player.sendMessage(Messages.poseDisabledError(pose));
+
+        return allowed;
     }
 }

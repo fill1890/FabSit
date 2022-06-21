@@ -4,9 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.Pose;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
 import net.fill1890.fabsit.error.PoseException;
+import net.fill1890.fabsit.util.Messages;
 import net.fill1890.fabsit.util.PoseTest;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandRegistryAccess;
@@ -24,6 +26,8 @@ import net.minecraft.util.math.BlockPos;
  * Inspiration taken from <a href="https://github.com/BradBot1/FabricSit">Fabric Sit</a>
  */
 public class SitCommand {
+    protected static final Pose POSE = Pose.SITTING;
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(
                 CommandManager.literal("sit")
@@ -42,6 +46,8 @@ public class SitCommand {
             return -1;
         }
 
+        if(!PoseTest.confirmEnabled(player, POSE)) return -1;
+
         // toggle sitting if already sat down
         if(player.hasVehicle()) {
             player.dismountVehicle();
@@ -52,11 +58,11 @@ public class SitCommand {
 
         // confirm player can pose right now
         try {
-            PoseTest.confirmPosable(player, Pose.SITTING);
+            PoseTest.confirmPosable(player, POSE);
         } catch(PoseException ignored) { return -1; }
 
         // Create a new pose manager for sitting and sit the player down
-        PoseManagerEntity chair = new PoseManagerEntity(player.getEntityWorld(), player.getPos(), Pose.SITTING, player);
+        PoseManagerEntity chair = new PoseManagerEntity(player.getEntityWorld(), player.getPos(), POSE, player);
         player.getEntityWorld().spawnEntity(chair);
         player.startRiding(chair, true);
 

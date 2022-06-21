@@ -2,22 +2,16 @@ package net.fill1890.fabsit.entity;
 
 import com.mojang.authlib.GameProfile;
 import net.fill1890.fabsit.util.Messages;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.KeybindTextContent;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.core.jmx.Server;
 
-import java.awt.*;
 import java.util.UUID;
 
 import static net.fill1890.fabsit.mixin.PlayerEntityAccessor.getLEFT_SHOULDER_ENTITY;

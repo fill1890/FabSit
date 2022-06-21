@@ -4,9 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.Pose;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
 import net.fill1890.fabsit.error.PoseException;
+import net.fill1890.fabsit.util.Messages;
 import net.fill1890.fabsit.util.PoseTest;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandRegistryAccess;
@@ -26,6 +28,8 @@ import static net.minecraft.server.command.CommandManager.literal;
  * Implementation details taken from <a href="https://github.com/Gecolay/GSit">GSit</a>
  */
 public class LayCommand {
+    protected static final Pose POSE = Pose.LAYING;
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
        dispatcher.register(literal("lay")
                .requires(Permissions.require("fabsit.commands.lay", true))
@@ -43,6 +47,8 @@ public class LayCommand {
             return -1;
         }
 
+        if(!PoseTest.confirmEnabled(player, POSE)) return -1;
+
         // toggle sitting if the player was sat down
         if(player.hasVehicle()) {
             player.dismountVehicle();
@@ -52,12 +58,12 @@ public class LayCommand {
 
         // confirm player can pose right now
         try {
-            PoseTest.confirmPosable(player, Pose.LAYING);
+            PoseTest.confirmPosable(player, POSE);
         } catch (PoseException ignored) { return -1; }
 
         // create a new pose manager for laying and sit the player down
         // (player is then invisible and an npc lays down)
-        PoseManagerEntity chair = new PoseManagerEntity(player.getEntityWorld(), player.getPos(), Pose.LAYING, player);
+        PoseManagerEntity chair = new PoseManagerEntity(player.getEntityWorld(), player.getPos(), POSE, player);
         player.getEntityWorld().spawnEntity(chair);
         player.startRiding(chair, true);
 

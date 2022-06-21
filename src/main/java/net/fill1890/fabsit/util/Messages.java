@@ -9,7 +9,7 @@ public interface Messages {
 
     // stop posing action message
     static Text getPoseStopMessage(Pose pose) {
-        return Text.translatable("chat.fabsit.stop_" + pose, Text.keybind("key.sneak"));
+        return Text.translatable("action.fabsit.stop_" + pose, Text.keybind("key.sneak"));
     }
 
     // trying to pose in midair
@@ -36,6 +36,14 @@ public interface Messages {
             return Text.translatable("chat.fabsit.sit_state_error");
         } else {
             return Text.translatable("chat.fabsit.pose_state_error");
+        }
+    }
+
+    static Text poseDisabledError(Pose pose) {
+        if(pose == Pose.SITTING) {
+            return Text.translatable("chat.fabsit.sit_disabled");
+        } else {
+            return Text.translatable("chat.fabsit.pose_disabled");
         }
     }
 }

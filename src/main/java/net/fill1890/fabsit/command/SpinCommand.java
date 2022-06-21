@@ -26,6 +26,8 @@ import static net.minecraft.server.command.CommandManager.literal;
  * Implementation details taken from <a href="https://github.com/Gecolay/GSit">GSit</a>
  */
 public class SpinCommand {
+    protected static final Pose POSE = Pose.SPINNING;
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
        dispatcher.register(literal("spin")
                .requires(Permissions.require("fabsit.commands.spin", true))
@@ -43,6 +45,8 @@ public class SpinCommand {
             return -1;
         }
 
+        if(!PoseTest.confirmEnabled(player, POSE)) return -1;
+
         // toggle sitting if the player was sat down
         if(player.hasVehicle()) {
             player.dismountVehicle();
@@ -52,12 +56,12 @@ public class SpinCommand {
 
         // confirm player can pose right now
         try {
-            PoseTest.confirmPosable(player, Pose.SPINNING);
+            PoseTest.confirmPosable(player, POSE);
         } catch(PoseException ignored) { return -1; }
 
         // create a new pose manager for spinning and sit the player down
         // (player is then invisible and an npc spins)
-        PoseManagerEntity chair = new PoseManagerEntity(player.getEntityWorld(), player.getPos(), Pose.SPINNING, player);
+        PoseManagerEntity chair = new PoseManagerEntity(player.getEntityWorld(), player.getPos(), POSE, player);
         player.getEntityWorld().spawnEntity(chair);
         player.startRiding(chair, true);
 
