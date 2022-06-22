@@ -140,7 +140,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
             // send the action bar status if it hasn't been sent yet
             if(!this.statusSent) {
-                player.sendMessage(Messages.getPoseStopMessage(this.pose), true);
+                player.sendMessage(Messages.getPoseStopMessage(this.pose, player), true);
 
                 this.statusSent = true;
             }

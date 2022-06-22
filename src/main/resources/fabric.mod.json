@@ -18,6 +18,12 @@
   "entrypoints": {
     "main": [
       "net.fill1890.fabsit.FabSit"
+    ],
+    "client": [
+      "net.fill1890.fabsit.FabSitClient"
+    ],
+    "server": [
+      "net.fill1890.fabsit.FabSitServer"
     ]
   },
   "mixins": [
@@ -29,8 +35,5 @@
     "fabric": "*",
     "minecraft": "~1.19",
     "java": ">=17"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }

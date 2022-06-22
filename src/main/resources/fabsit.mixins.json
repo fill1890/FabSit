@@ -3,10 +3,11 @@
   "minVersion": "0.8",
   "package": "net.fill1890.fabsit.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [
+  "server": [
     "PlayerEntityAccessor",
     "EntityAccessor",
     "LivingEntityAccessor",
-    "ServerPlayNetworkHandlerMixin"
+    "ServerPlayNetworkHandlerMixin",
+    "ServerPlayerEntityMixin"
   ]
 }

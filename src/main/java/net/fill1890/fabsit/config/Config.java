@@ -1,6 +1,8 @@
 package net.fill1890.fabsit.config;
 
 public class Config {
+    public String locale = "en_us";
+
     public boolean allow_posing_underwater = false;
     public boolean allow_posing_midair = false;
 

@@ -1,23 +1,32 @@
 package net.fill1890.fabsit.config;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import io.netty.util.Attribute;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fill1890.fabsit.FabSit;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Config manager
- * <br>
- * Implementation based on Patbox's <a href="https://github.com/Patbox/StyledChat">Styled Chat</a> config
  */
 public class ConfigManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().setLenient().create();
     private static Config CONFIG;
+    public static Map<String, String> LANG;
+
+    public static ArrayList<ServerPlayerEntity> loadedPlayers = new ArrayList<>();
 
     public static Config getConfig() {
         return CONFIG;
@@ -65,7 +74,50 @@ public class ConfigManager {
             return false;
         }
 
+        LANG = loadLocalizations(config.locale);
+
         CONFIG = config;
         return true;
+    }
+
+    private static Map<String, String> loadLocalizations(@NotNull String locale) {
+        InputStream localeFile;
+        String json = "";
+
+        localeFile = ConfigManager.class.getClassLoader().getResourceAsStream("assets/fabsit/lang/" + locale + ".json");
+
+        if(localeFile == null && !locale.equals("en_us")) {
+            FabSit.LOGGER.warn("FabSit locale " + locale + " not found! Attempting to fall back to en_us...");
+            return loadLocalizations("en_us");
+        } else if(localeFile == null) {
+            FabSit.LOGGER.error("FabSit localizations not found! Translations will not be complete");
+            return null;
+        }
+
+        try {
+            json = IOUtils.toString(new BufferedReader(new InputStreamReader(localeFile)));
+        } catch(IOException e) {
+            if(!locale.equals("en_us")) {
+                FabSit.LOGGER.warn("Error loading FabSit locale " + locale + "! Attempting to fall back to en_us...");
+                return loadLocalizations("en_us");
+            } else {
+                FabSit.LOGGER.error("Error loading FabSit locales! Translations will not be done");
+                return null;
+            }
+        }
+
+        Type emptyMapType = new TypeToken<Map<String, String>>() {}.getType();
+
+        try {
+            return GSON.fromJson(json, emptyMapType);
+        } catch(JsonParseException e) {
+            if(!locale.equals("en_us")) {
+                FabSit.LOGGER.warn("FabSit locale " + locale + " is not valid! Attempting to fall back to en_us...");
+                return loadLocalizations("en_us");
+            } else {
+                FabSit.LOGGER.error("Error loading FabSit locales - no valid locale file! Translations will not be done");
+                return null;
+            }
+        }
     }
 }

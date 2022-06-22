@@ -23,13 +23,13 @@ public interface PoseTest {
     static void confirmPosable(ServerPlayerEntity player, Pose pose) throws PoseException {
         // check if spectating
         if(player.isSpectator()) {
-            player.sendMessage(Messages.getSpectatorError(pose));
+            player.sendMessage(Messages.getSpectatorError(pose, player));
             throw new PoseException.SpectatorException();
         }
 
         // check if underwater
         if(player.isInsideWaterOrBubbleColumn() && !ConfigManager.getConfig().allow_posing_underwater) {
-            player.sendMessage(Messages.getStateError(pose));
+            player.sendMessage(Messages.getStateError(pose, player));
             throw new PoseException.StateException();
         }
 
@@ -39,7 +39,7 @@ public interface PoseTest {
                 || player.isSwimming()
                 || player.isSleeping())
         {
-            player.sendMessage(Messages.getStateError(pose));
+            player.sendMessage(Messages.getStateError(pose, player));
             throw new PoseException.StateException();
         }
 
@@ -47,7 +47,7 @@ public interface PoseTest {
 
         // check if in midair
         if(below.isAir() && !ConfigManager.getConfig().allow_posing_midair) {
-            player.sendMessage(Messages.getMidairError(pose));
+            player.sendMessage(Messages.getMidairError(pose, player));
             throw new PoseException.MidairException();
         }
     }
@@ -60,7 +60,7 @@ public interface PoseTest {
             case SITTING -> poses.sit;
         };
 
-        if(!allowed) player.sendMessage(Messages.poseDisabledError(pose));
+        if(!allowed) player.sendMessage(Messages.poseDisabledError(pose, player));
 
         return allowed;
     }
