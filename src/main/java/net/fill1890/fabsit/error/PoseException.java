@@ -9,4 +9,6 @@ public class PoseException extends Exception {
     public static class StateException extends PoseException {}
     // pose disabled
     public static class PoseDisabled extends PoseException {}
+    // block already occupied
+    public static class BlockOccupied extends PoseException {}
 }

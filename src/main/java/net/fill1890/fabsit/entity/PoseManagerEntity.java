@@ -36,6 +36,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
     // visible npc for posing (if needed)
     private PosingEntity poser;
 
+    private final BlockPos pos;
+
     protected boolean killing;
 
     public PoseManagerEntity(Vec3d pos, Pose pose, ServerPlayerEntity player) {
@@ -48,6 +50,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
         this.setCustomName(Text.of("FABSEAT"));
         this.setNoGravity(true);
         this.setYaw(player.getYaw()); // TODO: test this properly
+
+        this.pos = player.getBlockPos();
 
         // if the pose is more complex than sitting, create a posing npc
         if(pose == Pose.LAYING || pose == Pose.SPINNING) {
@@ -85,6 +89,9 @@ public class PoseManagerEntity extends ArmorStandEntity {
     @Override
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
+
+        if(ConfigManager.getConfig().centre_on_blocks)
+            ConfigManager.occupiedBlocks.remove(this.pos);
 
         // if the pose was npc-based, show the player again when exited
         if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {

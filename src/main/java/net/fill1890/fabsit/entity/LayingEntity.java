@@ -55,7 +55,7 @@ public class LayingEntity extends PosingEntity {
         bed = bed.with(BedBlock.FACING, this.initialDirection.getOpposite());
 
         // raise pose position to lie on the ground rather than in it
-        this.setPosition(player.getX(), player.getY() + 0.1, player.getZ());
+        this.setPosition(this.getX(), this.getY() + 0.1, this.getZ());
 
         this.addBedPacket = new BlockUpdateS2CPacket(bedPos, bed);
         this.removeBedPacket = new BlockUpdateS2CPacket(bedPos, old);

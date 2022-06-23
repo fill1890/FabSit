@@ -2,10 +2,12 @@ package net.fill1890.fabsit.entity;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Pair;
+import net.fill1890.fabsit.config.ConfigManager;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 import java.util.ArrayList;
@@ -78,7 +80,12 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         this.getDataTracker().set(getMAIN_ARM(), player.getDataTracker().get(getMAIN_ARM()));
 
         // set the poser position
-        this.setPosition(player.getPos());
+        if(ConfigManager.getConfig().centre_on_blocks) {
+            BlockPos pos = player.getBlockPos();
+            this.setPosition(pos.getX() + 0.5d, pos.getY(), pos.getZ() + 0.5d);
+        } else {
+            this.setPosition(player.getPos());
+        }
 
         // set up direction
         this.initialDirection = getCardinal(player.getHeadYaw());

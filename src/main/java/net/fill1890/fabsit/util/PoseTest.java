@@ -40,6 +40,9 @@ public interface PoseTest {
         // check if in midair
         if(below.isAir() && !ConfigManager.getConfig().allow_posing_midair)
             throw new PoseException.MidairException();
+
+        if(ConfigManager.occupiedBlocks.contains(player.getBlockPos()))
+            throw new PoseException.BlockOccupied();
     }
 
     static void confirmEnabled(Pose pose) throws PoseException {

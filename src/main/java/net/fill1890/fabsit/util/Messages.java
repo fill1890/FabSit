@@ -10,6 +10,7 @@ import static net.fill1890.fabsit.error.PoseException.StateException;
 import static net.fill1890.fabsit.error.PoseException.MidairException;
 import static net.fill1890.fabsit.error.PoseException.SpectatorException;
 import static net.fill1890.fabsit.error.PoseException.PoseDisabled;
+import static net.fill1890.fabsit.error.PoseException.BlockOccupied;
 
 // this may not be the best way of doing this kind of function
 // but it works for now
@@ -84,6 +85,13 @@ public class Messages {
         return getChatMessageByKey(player, "reload_error");
     }
 
+    public static Text blockOccupiedError(ServerPlayerEntity player, Pose pose) {
+        return getChatMessageByKey(player, switch(pose) {
+            case SITTING -> "sit_block_occupied";
+            default -> "pose_block_occupied";
+        });
+    }
+
     public static void sendByException(ServerPlayerEntity player, Pose pose, PoseException e) {
         if(e instanceof MidairException) {
             player.sendMessage(getMidairError(player, pose));
@@ -93,6 +101,8 @@ public class Messages {
             player.sendMessage(getStateError(player, pose));
         } else if(e instanceof PoseDisabled) {
             player.sendMessage(poseDisabledError(player, pose));
+        } else if(e instanceof BlockOccupied) {
+            player.sendMessage(blockOccupiedError(player, pose));
         }
     }
 }

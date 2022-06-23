@@ -14,6 +14,9 @@ public class Config {
     public boolean allow_posing_underwater = false;
     public boolean allow_posing_midair = false;
 
+    // centre players on the blocks they're posing on
+    public boolean centre_on_blocks = false;
+
     // permitted poses
     // if LuckPerms is installed it may be better to use it for more specific permissions
     public Poses allow_poses = new Poses();

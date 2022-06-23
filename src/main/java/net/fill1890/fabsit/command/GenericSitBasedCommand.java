@@ -11,6 +11,8 @@ import net.fill1890.fabsit.util.PoseTest;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Generic sit-based command class
@@ -60,7 +62,15 @@ public abstract class GenericSitBasedCommand {
 
         // create a new pose manager for laying and sit the player down
         // (player is then invisible and an npc lays down)
-        PoseManagerEntity chair = new PoseManagerEntity(player.getPos(), pose, player);
+        PoseManagerEntity chair;
+        if(ConfigManager.getConfig().centre_on_blocks) {
+            BlockPos pos = player.getBlockPos();
+            chair = new PoseManagerEntity(new Vec3d(pos.getX() + 0.5d, pos.getY(), pos.getZ() + 0.5d), pose, player);
+            ConfigManager.occupiedBlocks.add(pos);
+        } else {
+            chair = new PoseManagerEntity(player.getPos(), pose, player);
+        }
+
         player.getEntityWorld().spawnEntity(chair);
         player.startRiding(chair, true);
 

@@ -9,6 +9,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.error.LoadConfigException;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +29,8 @@ public abstract class ConfigManager {
     private static Config CONFIG;
     // language data
     public static Map<String, String> LANG;
+    // blocks currently occupied for posing
+    public static ArrayList<BlockPos> occupiedBlocks = new ArrayList<>();
 
     // players that have the mod loaded
     public static final ArrayList<ServerPlayerEntity> loadedPlayers = new ArrayList<>();
