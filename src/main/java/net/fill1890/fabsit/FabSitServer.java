@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class FabSitServer implements DedicatedServerModInitializer {
+
     @Override
     public void onInitializeServer() {
         ServerPlayNetworking.registerGlobalReceiver(FabSit.fabsitChannel, FabSitServer::handleCheckResponse);

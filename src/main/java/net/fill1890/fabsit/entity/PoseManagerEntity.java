@@ -39,10 +39,10 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
     protected boolean killing;
 
-    public PoseManagerEntity(World world, Vec3d pos, Pose pose, ServerPlayerEntity player) {
+    public PoseManagerEntity(Vec3d pos, Pose pose, ServerPlayerEntity player) {
         // create a new armour stand at the appropriate height
         // TODO: no magic numbers
-        super(world, pos.x, pos.y - 1.6, pos.z);
+        super(player.getWorld(), pos.x, pos.y - 1.6, pos.z);
 
         this.setInvisible(true);
         this.setInvulnerable(true);

@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Config manager
  */
-public class ConfigManager {
+public abstract class ConfigManager {
     // GSON config
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().setLenient().create();
     // config data

@@ -9,6 +9,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
 
 public class FabSitClient implements ClientModInitializer {
+
     @Override
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(FabSit.fabsitChannel, FabSitClient::checkPacketReply);

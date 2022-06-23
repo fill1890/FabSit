@@ -12,7 +12,7 @@ import net.minecraft.util.Formatting;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class ReloadConfigCommand {
+public abstract class ReloadConfigCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(literal("fabsit")
                 .then(literal("reload")
