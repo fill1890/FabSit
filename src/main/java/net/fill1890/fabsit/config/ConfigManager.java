@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import io.netty.util.Attribute;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fill1890.fabsit.FabSit;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -22,11 +21,15 @@ import java.util.Map;
  * Config manager
  */
 public class ConfigManager {
+    // GSON config
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().setLenient().create();
+    // config data
     private static Config CONFIG;
+    // language data
     public static Map<String, String> LANG;
 
-    public static ArrayList<ServerPlayerEntity> loadedPlayers = new ArrayList<>();
+    // players that have the mod loaded
+    public static final ArrayList<ServerPlayerEntity> loadedPlayers = new ArrayList<>();
 
     public static Config getConfig() {
         return CONFIG;
@@ -36,11 +39,14 @@ public class ConfigManager {
         CONFIG = null;
 
         Config config;
-        File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "fabsit.json");
         String json = "";
         BufferedWriter writer;
 
+        // try to load the config file
+        File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "fabsit.json");
+
         if(configFile.exists()) {
+            // exists: read into config object
             try {
                 json = IOUtils.toString(new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8));
             } catch(FileNotFoundException ignored) {} // should never occur - previous check
@@ -55,10 +61,14 @@ public class ConfigManager {
                 FabSit.LOGGER.error("Invalid JSON structure in config file!");
                 return false;
             }
+
         } else {
+            // doesn't exist: use defaults
             config = new Config();
         }
 
+        // write the config back to the file
+        // creates the file on first run and purges invalid properties
         try {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8));
         } catch(FileNotFoundException e) {
@@ -74,26 +84,31 @@ public class ConfigManager {
             return false;
         }
 
+        // load localizations for server translation
         LANG = loadLocalizations(config.locale);
-
         CONFIG = config;
+
         return true;
     }
 
     private static Map<String, String> loadLocalizations(@NotNull String locale) {
         InputStream localeFile;
-        String json = "";
+        String json;
 
+        // try to load the config file
         localeFile = ConfigManager.class.getClassLoader().getResourceAsStream("assets/fabsit/lang/" + locale + ".json");
 
         if(localeFile == null && !locale.equals("en_us")) {
+            // not found - default to en_us
             FabSit.LOGGER.warn("FabSit locale " + locale + " not found! Attempting to fall back to en_us...");
             return loadLocalizations("en_us");
         } else if(localeFile == null) {
+            // en_us not found
             FabSit.LOGGER.error("FabSit localizations not found! Translations will not be complete");
             return null;
         }
 
+        // read the file in
         try {
             json = IOUtils.toString(new BufferedReader(new InputStreamReader(localeFile)));
         } catch(IOException e) {
@@ -106,8 +121,10 @@ public class ConfigManager {
             }
         }
 
+        // typedef for GSON read to force Map<String, String>
         Type emptyMapType = new TypeToken<Map<String, String>>() {}.getType();
 
+        // load data into lang map
         try {
             return GSON.fromJson(json, emptyMapType);
         } catch(JsonParseException e) {

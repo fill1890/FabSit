@@ -7,6 +7,15 @@ import net.minecraft.text.Text;
 
 // this may not be the best way of doing this kind of function
 // but it works for now
+
+/**
+ * Message lookup functions
+ *
+ * Supports both server-side and client-side translation
+ * Given a player, will check if the player has the mod loaded locally for local translation support
+ * If so, will return a translatable key for local translation
+ * If not, will return a static response based on the server locale
+ */
 public class Messages {
     private static final String ACTION = "action.fabsit.";
     private static final String CHAT = "chat.fabsit.";

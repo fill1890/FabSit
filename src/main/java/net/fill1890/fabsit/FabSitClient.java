@@ -14,9 +14,8 @@ public class FabSitClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(FabSit.fabsitChannel, FabSitClient::checkPacketReply);
     }
 
+    // if the server pings us with a FabSit check packet, reply with the same to confirm it's loaded
     public static void checkPacketReply(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
-        client.execute(() -> {
-            ClientPlayNetworking.send(FabSit.fabsitChannel, PacketByteBufs.empty());
-        });
+        client.execute(() -> ClientPlayNetworking.send(FabSit.fabsitChannel, PacketByteBufs.empty()));
     }
 }

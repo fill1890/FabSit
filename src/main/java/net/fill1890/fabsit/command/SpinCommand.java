@@ -8,13 +8,11 @@ import net.fill1890.fabsit.entity.Pose;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
 import net.fill1890.fabsit.error.PoseException;
 import net.fill1890.fabsit.util.PoseTest;
-import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -45,6 +43,7 @@ public class SpinCommand {
             return -1;
         }
 
+        // check the pose is config-enabled
         if(!PoseTest.confirmEnabled(player, POSE)) return -1;
 
         // toggle sitting if the player was sat down

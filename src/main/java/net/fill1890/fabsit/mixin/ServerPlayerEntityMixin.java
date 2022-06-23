@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin {
+
+    // when a player disconnects remove them from the list of supported players
     @Inject(at = @At("HEAD"), method = "onDisconnect")
     private void removeFromConfig(CallbackInfo ci) {
         ConfigManager.loadedPlayers.remove((ServerPlayerEntity) (Object) this);

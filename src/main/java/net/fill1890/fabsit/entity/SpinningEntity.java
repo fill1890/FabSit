@@ -9,7 +9,7 @@ import static net.fill1890.fabsit.mixin.LivingEntityAccessor.getLIVING_FLAGS;
 
 public class SpinningEntity extends PosingEntity {
     // pivot the poser to face vertically
-    EntityS2CPacket pivotPacket;
+    final EntityS2CPacket pivotPacket;
 
     public SpinningEntity(ServerPlayerEntity player, GameProfile gameProfile) {
         super(player, gameProfile);

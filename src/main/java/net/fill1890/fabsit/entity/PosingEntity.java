@@ -6,7 +6,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
 
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     private final List<net.minecraft.util.Pair<ServerPlayerEntity, Integer>> delayedRemoves = new ArrayList<>();
 
     // initial facing direction of the player
-    protected Direction initialDirection;
+    protected final Direction initialDirection;
 
     // Set of players currently being added; use for initial setup
     protected final Set<ServerPlayerEntity> addingPlayers = new HashSet<>();
