@@ -15,11 +15,11 @@ public class FabSitServer implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
-        ServerPlayNetworking.registerGlobalReceiver(FabSit.fabsitChannel, FabSitServer::handleCheckResponse);
+        ServerPlayNetworking.registerGlobalReceiver(FabSit.LOADED_CHANNEL, FabSitServer::handleCheckResponse);
 
         // on player joins, ping them with a fabsit check packet to see if they have the mod loaded
         ServerPlayConnectionEvents.JOIN.register((ServerPlayNetworkHandler networkHandler, PacketSender sender, MinecraftServer server)
-                -> sender.sendPacket(FabSit.fabsitChannel, PacketByteBufs.empty()));
+                -> sender.sendPacket(FabSit.LOADED_CHANNEL, PacketByteBufs.empty()));
     }
 
     // if the client has the mod loaded, add them to the supported player registry

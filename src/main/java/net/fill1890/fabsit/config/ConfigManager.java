@@ -7,6 +7,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fill1890.fabsit.FabSit;
+import net.fill1890.fabsit.error.LoadConfigException;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +36,7 @@ public abstract class ConfigManager {
         return CONFIG;
     }
 
-    public static boolean loadConfig() {
+    public static void loadConfig() throws LoadConfigException {
         CONFIG = null;
 
         Config config;
@@ -52,14 +53,14 @@ public abstract class ConfigManager {
             } catch(FileNotFoundException ignored) {} // should never occur - previous check
               catch(IOException e) {
                 FabSit.LOGGER.error("I/O error reading FabSit config file!");
-                return false;
+                throw new LoadConfigException();
             }
 
             try {
                 config = GSON.fromJson(json, Config.class);
             } catch(JsonSyntaxException e) {
                 FabSit.LOGGER.error("Invalid JSON structure in config file!");
-                return false;
+                throw new LoadConfigException();
             }
 
         } else {
@@ -73,7 +74,7 @@ public abstract class ConfigManager {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8));
         } catch(FileNotFoundException e) {
             FabSit.LOGGER.error("Error writing to config file! Is the file writable?");
-            return false;
+            throw new LoadConfigException();
         }
 
         try {
@@ -81,14 +82,12 @@ public abstract class ConfigManager {
             writer.close();
         } catch(IOException e) {
             FabSit.LOGGER.error("Error writing to config file!");
-            return false;
+            throw new LoadConfigException();
         }
 
         // load localizations for server translation
         LANG = loadLocalizations(config.locale);
         CONFIG = config;
-
-        return true;
     }
 
     private static Map<String, String> loadLocalizations(@NotNull String locale) {
