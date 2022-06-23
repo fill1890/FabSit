@@ -17,42 +17,32 @@ public interface PoseTest {
      * If pose is invalid, will send the relevant message to the player and throw an exception
      *
      * @param player player to check posing for
-     * @param pose pose player is attempting
      * @throws PoseException if pose is not valid
      */
-    static void confirmPosable(ServerPlayerEntity player, Pose pose) throws PoseException {
+    static void confirmPosable(ServerPlayerEntity player) throws PoseException {
         // check if spectating
-        if(player.isSpectator()) {
-            player.sendMessage(Messages.getSpectatorError(pose, player));
+        if(player.isSpectator())
             throw new PoseException.SpectatorException();
-        }
 
         // check if underwater
-        if(player.isInsideWaterOrBubbleColumn() && !ConfigManager.getConfig().allow_posing_underwater) {
-            player.sendMessage(Messages.getStateError(pose, player));
+        if(player.isInsideWaterOrBubbleColumn() && !ConfigManager.getConfig().allow_posing_underwater)
             throw new PoseException.StateException();
-        }
 
         // check if flying, swimming, sleeping, or underwater
         if(
                 player.isFallFlying()
                 || player.isSwimming()
                 || player.isSleeping())
-        {
-            player.sendMessage(Messages.getStateError(pose, player));
             throw new PoseException.StateException();
-        }
 
         BlockState below = player.getEntityWorld().getBlockState(new BlockPos(player.getPos()).down());
 
         // check if in midair
-        if(below.isAir() && !ConfigManager.getConfig().allow_posing_midair) {
-            player.sendMessage(Messages.getMidairError(pose, player));
+        if(below.isAir() && !ConfigManager.getConfig().allow_posing_midair)
             throw new PoseException.MidairException();
-        }
     }
 
-    static boolean confirmEnabled(ServerPlayerEntity player, Pose pose) {
+    static void confirmEnabled(Pose pose) throws PoseException {
         Config.Poses poses = ConfigManager.getConfig().allow_poses;
         boolean allowed = switch (pose) {
             case LAYING -> poses.lay;
@@ -60,8 +50,6 @@ public interface PoseTest {
             case SITTING -> poses.sit;
         };
 
-        if(!allowed) player.sendMessage(Messages.poseDisabledError(pose, player));
-
-        return allowed;
+        if(!allowed) throw new PoseException.PoseDisabled();
     }
 }

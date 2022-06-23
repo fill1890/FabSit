@@ -4,9 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.Pose;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
 import net.fill1890.fabsit.error.PoseException;
+import net.fill1890.fabsit.util.Messages;
 import net.fill1890.fabsit.util.PoseTest;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
@@ -43,7 +45,13 @@ public class SitCommand {
         }
 
         // check the pose is config-enabled
-        if(!PoseTest.confirmEnabled(player, POSE)) return -1;
+        try {
+            PoseTest.confirmEnabled(POSE);
+        } catch (PoseException e) {
+            if(ConfigManager.getConfig().enable_messages.pose_errors)
+                Messages.sendByException(player, POSE, e);
+            return -1;
+        }
 
         // toggle sitting if already sat down
         if(player.hasVehicle()) {
@@ -55,8 +63,13 @@ public class SitCommand {
 
         // confirm player can pose right now
         try {
-            PoseTest.confirmPosable(player, POSE);
-        } catch(PoseException ignored) { return -1; }
+            PoseTest.confirmPosable(player);
+        } catch(PoseException e) {
+            System.out.println("messages: " + ConfigManager.getConfig().enable_messages.pose_errors);
+            if(ConfigManager.getConfig().enable_messages.pose_errors)
+                Messages.sendByException(player, POSE, e);
+            return -1;
+        }
 
         // Create a new pose manager for sitting and sit the player down
         PoseManagerEntity chair = new PoseManagerEntity(player.getEntityWorld(), player.getPos(), POSE, player);

@@ -7,4 +7,6 @@ public class PoseException extends Exception {
     public static class SpectatorException extends PoseException {}
     // trying to pose when underwater/flying/etc
     public static class StateException extends PoseException {}
+    // pose disabled
+    public static class PoseDisabled extends PoseException {}
 }

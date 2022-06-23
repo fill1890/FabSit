@@ -2,8 +2,14 @@ package net.fill1890.fabsit.util;
 
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.Pose;
+import net.fill1890.fabsit.error.PoseException;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+
+import static net.fill1890.fabsit.error.PoseException.StateException;
+import static net.fill1890.fabsit.error.PoseException.MidairException;
+import static net.fill1890.fabsit.error.PoseException.SpectatorException;
+import static net.fill1890.fabsit.error.PoseException.PoseDisabled;
 
 // this may not be the best way of doing this kind of function
 // but it works for now
@@ -68,5 +74,17 @@ public class Messages {
             case SITTING -> "sit_disabled";
             default -> "pose_disabled";
         });
+    }
+
+    public static void sendByException(ServerPlayerEntity player, Pose pose, PoseException e) {
+        if(e instanceof MidairException) {
+            player.sendMessage(getMidairError(pose, player));
+        } else if(e instanceof SpectatorException) {
+            player.sendMessage(getSpectatorError(pose, player));
+        } else if(e instanceof StateException) {
+            player.sendMessage(getStateError(pose, player));
+        } else if(e instanceof PoseDisabled) {
+            player.sendMessage(poseDisabledError(pose, player));
+        }
     }
 }

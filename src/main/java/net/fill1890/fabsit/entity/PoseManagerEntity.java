@@ -1,6 +1,7 @@
 package net.fill1890.fabsit.entity;
 
 import com.mojang.authlib.GameProfile;
+import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.util.Messages;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -140,7 +141,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
             // send the action bar status if it hasn't been sent yet
             if(!this.statusSent) {
-                player.sendMessage(Messages.getPoseStopMessage(this.pose, player), true);
+                if(ConfigManager.getConfig().enable_messages.action_bar)
+                    player.sendMessage(Messages.getPoseStopMessage(this.pose, player), true);
 
                 this.statusSent = true;
             }
