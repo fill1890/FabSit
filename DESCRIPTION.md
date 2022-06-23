@@ -31,5 +31,5 @@ Permissions to pose are granted to all players by default.
 `sit, lay, spin:` specific permission to use appropriate poses
 
 ### `fabsit.reload`
-Permission to reload the config file from disk. Requires op level 2 by default
+Permission to use `/fabsit reload` to reload the config file from disk. Requires op level 2 by default
 
