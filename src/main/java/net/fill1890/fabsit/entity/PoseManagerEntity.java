@@ -11,7 +11,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 import java.util.UUID;
 
@@ -97,6 +96,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
             this.poser.getDataTracker().set(getLEFT_SHOULDER_ENTITY(), new NbtCompound());
             this.poser.getDataTracker().set(getRIGHT_SHOULDER_ENTITY(), new NbtCompound());
         }
+
+        passenger.teleport(passenger.getX(), passenger.getY() + 0.6, passenger.getZ());
     }
 
     public void animate(int id) {

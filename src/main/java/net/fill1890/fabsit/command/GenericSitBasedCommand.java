@@ -42,8 +42,6 @@ public abstract class GenericSitBasedCommand {
         // toggle sitting if the player was sat down
         if(player.hasVehicle()) {
             player.dismountVehicle();
-            // TODO: should be able to add to manager?
-            player.teleport(player.getX(), player.getY() + 0.6, player.getZ());
             return 1;
         }
 
