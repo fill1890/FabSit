@@ -11,5 +11,10 @@
   "chat.fabsit.pose_state_error": "§4You can't pose right now!",
 
   "chat.fabsit.reload_success": "Config reloaded!",
-  "chat.fabsit.reload_error": "Error reloading config! Check server console"
+  "chat.fabsit.reload_error": "Error reloading config! Check server console",
+
+  "key.fabsit.category": "FabSit",
+  "key.fabsit.sit": "Sit down",
+  "key.fabsit.lay": "Lay down",
+  "key.fabsit.spin": "Spin"
 }

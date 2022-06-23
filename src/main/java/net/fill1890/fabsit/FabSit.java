@@ -14,8 +14,10 @@ public class FabSit implements ModInitializer {
 	public static final String MOD_ID = "fabsit";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	// packet channel for communication
+	// packet channel for checking if mod loaded
 	public static final Identifier LOADED_CHANNEL = new Identifier("fabsit:check_loaded");
+	// packet channel for pose requests (keybinds etc.)
+	public static final Identifier REQUEST_CHANNEL = new Identifier("fabsit:request_pose");
 
 	@Override
 	public void onInitialize() {

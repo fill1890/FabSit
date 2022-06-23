@@ -29,6 +29,10 @@ public abstract class GenericSitBasedCommand {
             return -1;
         }
 
+        return run(player, pose);
+    }
+
+    public static int run(ServerPlayerEntity player, Pose pose) {
         // check the pose is config-enabled
         try {
             PoseTest.confirmEnabled(pose);
