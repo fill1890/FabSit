@@ -56,7 +56,7 @@ Configuration file with default values is as follows:
 }
 ```
 
-### Internationalization
+## Internationalization
 
 FabSit supports both server-side and client-side translation.
 
