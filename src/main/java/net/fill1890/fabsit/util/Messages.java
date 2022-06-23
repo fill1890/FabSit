@@ -27,7 +27,7 @@ public class Messages {
     private static final String CHAT = "chat.fabsit.";
 
     // stop posing action message
-    public static Text getPoseStopMessage(Pose pose, ServerPlayerEntity player) {
+    public static Text getPoseStopMessage(ServerPlayerEntity player, Pose pose) {
         if(ConfigManager.loadedPlayers.contains(player)) {
             return Text.translatable(ACTION + "stop_" + pose, Text.keybind("key.sneak"));
         } else {
@@ -45,7 +45,7 @@ public class Messages {
     }
 
     // trying to pose in midair
-    public static Text getMidairError(Pose pose, ServerPlayerEntity player) {
+    public static Text getMidairError(ServerPlayerEntity player, Pose pose) {
         return getChatMessageByKey(player, switch(pose) {
             case SITTING -> "sit_air_error";
             default -> "pose_air_error";
@@ -53,7 +53,7 @@ public class Messages {
     }
 
     // trying to pose while a spectator
-    public static Text getSpectatorError(Pose pose, ServerPlayerEntity player) {
+    public static Text getSpectatorError(ServerPlayerEntity player, Pose pose) {
         return getChatMessageByKey(player, switch(pose) {
             case SITTING -> "sit_spectator_error";
             default -> "pose_spectator_error";
@@ -61,7 +61,7 @@ public class Messages {
     }
 
     // trying to pose while swimming/sleeping/flying/etc
-    public static Text getStateError(Pose pose, ServerPlayerEntity player) {
+    public static Text getStateError(ServerPlayerEntity player, Pose pose) {
         return getChatMessageByKey(player, switch (pose) {
             case SITTING -> "sit_state_error";
             default -> "pose_state_error";
@@ -69,22 +69,30 @@ public class Messages {
     }
 
     // pose disabled
-    public static Text poseDisabledError(Pose pose, ServerPlayerEntity player) {
+    public static Text poseDisabledError(ServerPlayerEntity player, Pose pose) {
         return getChatMessageByKey(player, switch (pose) {
             case SITTING -> "sit_disabled";
             default -> "pose_disabled";
         });
     }
 
+    public static Text configLoadSuccess(ServerPlayerEntity player) {
+        return getChatMessageByKey(player, "reload_success");
+    }
+
+    public static Text configLoadError(ServerPlayerEntity player) {
+        return getChatMessageByKey(player, "reload_error");
+    }
+
     public static void sendByException(ServerPlayerEntity player, Pose pose, PoseException e) {
         if(e instanceof MidairException) {
-            player.sendMessage(getMidairError(pose, player));
+            player.sendMessage(getMidairError(player, pose));
         } else if(e instanceof SpectatorException) {
-            player.sendMessage(getSpectatorError(pose, player));
+            player.sendMessage(getSpectatorError(player, pose));
         } else if(e instanceof StateException) {
-            player.sendMessage(getStateError(pose, player));
+            player.sendMessage(getStateError(player, pose));
         } else if(e instanceof PoseDisabled) {
-            player.sendMessage(poseDisabledError(pose, player));
+            player.sendMessage(poseDisabledError(player, pose));
         }
     }
 }
