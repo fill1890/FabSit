@@ -5,6 +5,7 @@ import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.util.Messages;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -42,7 +43,6 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
     public PoseManagerEntity(Vec3d pos, Pose pose, ServerPlayerEntity player) {
         // create a new armour stand at the appropriate height
-        // TODO: no magic numbers
         super(player.getWorld(), pos.x, pos.y - 1.6, pos.z);
 
         this.setInvisible(true);
@@ -103,8 +103,6 @@ public class PoseManagerEntity extends ArmorStandEntity {
             this.poser.getDataTracker().set(getLEFT_SHOULDER_ENTITY(), new NbtCompound());
             this.poser.getDataTracker().set(getRIGHT_SHOULDER_ENTITY(), new NbtCompound());
         }
-
-        passenger.teleport(passenger.getX(), passenger.getY() + 0.6, passenger.getZ());
     }
 
     public void animate(int id) {
@@ -121,6 +119,11 @@ public class PoseManagerEntity extends ArmorStandEntity {
     @Override
     public boolean collides() {
         return false;
+    }
+
+    @Override
+    public Vec3d updatePassengerForDismount(LivingEntity passenger) {
+        return new Vec3d(this.getX(), this.getY() + 1.6, this.getZ());
     }
 
     @Override
