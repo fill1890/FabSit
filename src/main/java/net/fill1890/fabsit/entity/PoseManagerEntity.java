@@ -41,7 +41,9 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
     protected boolean killing;
 
-    public PoseManagerEntity(Vec3d pos, Pose pose, ServerPlayerEntity player) {
+    protected Position position;
+
+    public PoseManagerEntity(Vec3d pos, Pose pose, ServerPlayerEntity player, Position position) {
         // create a new armour stand at the appropriate height
         super(player.getWorld(), pos.x, pos.y - 1.6, pos.z);
 
@@ -51,7 +53,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
         this.setNoGravity(true);
         this.setYaw(player.getYaw()); // TODO: test this properly
 
-        this.pos = player.getBlockPos();
+        this.pos = new BlockPos(pos);
+        this.position = position;
 
         // if the pose is more complex than sitting, create a posing npc
         if(pose == Pose.LAYING || pose == Pose.SPINNING) {
@@ -159,9 +162,12 @@ public class PoseManagerEntity extends ArmorStandEntity {
             }
         }
 
-        // stop the player sitting if the block below is broken
-        BlockState sittingBlock = getEntityWorld().getBlockState(new BlockPos(getPos()).up());
-        if(sittingBlock.isAir()) { kill(); return; }
+        BlockState sittingBlock = getEntityWorld().getBlockState(switch(this.position){
+            case IN_BLOCK -> pos;
+            case ON_BLOCK -> pos.down();
+        });
+
+        if(sittingBlock.isAir()) { this.kill(); return; }
 
         // if pose is npc-based, update players with npc info
         if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {

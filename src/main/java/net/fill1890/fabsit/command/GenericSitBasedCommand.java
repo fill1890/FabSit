@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.Pose;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
+import net.fill1890.fabsit.entity.Position;
 import net.fill1890.fabsit.error.PoseException;
 import net.fill1890.fabsit.util.Messages;
 import net.fill1890.fabsit.util.PoseTest;
@@ -13,6 +14,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+
+import javax.annotation.Nullable;
 
 /**
  * Generic sit-based command class
@@ -34,7 +37,9 @@ public abstract class GenericSitBasedCommand {
         return run(player, pose);
     }
 
-    public static int run(ServerPlayerEntity player, Pose pose) {
+    public static int run(ServerPlayerEntity player, Pose pose) { return run(player, pose, null, Position.ON_BLOCK); }
+
+    public static int run(ServerPlayerEntity player, Pose pose, @Nullable Vec3d pos, Position inBlock) {
         // check the pose is config-enabled
         try {
             PoseTest.confirmEnabled(pose);
@@ -60,16 +65,17 @@ public abstract class GenericSitBasedCommand {
             return -1;
         }
 
-        // create a new pose manager for laying and sit the player down
-        // (player is then invisible and an npc lays down)
-        PoseManagerEntity chair;
-        if(ConfigManager.getConfig().centre_on_blocks) {
-            BlockPos pos = player.getBlockPos();
-            chair = new PoseManagerEntity(new Vec3d(pos.getX() + 0.5d, pos.getY(), pos.getZ() + 0.5d), pose, player);
-            ConfigManager.occupiedBlocks.add(pos);
-        } else {
-            chair = new PoseManagerEntity(player.getPos(), pose, player);
+        Vec3d sitPos = pos;
+        if(sitPos == null && ConfigManager.getConfig().centre_on_blocks) {
+            BlockPos block = player.getBlockPos();
+            sitPos = new Vec3d(block.getX() + 0.5d, block.getY(), block.getZ() + 0.5d);
+        } else if(sitPos == null) {
+            sitPos = player.getPos();
         }
+
+        PoseManagerEntity chair = new PoseManagerEntity(sitPos, pose, player, inBlock);
+        if(ConfigManager.getConfig().centre_on_blocks)
+            ConfigManager.occupiedBlocks.add(new BlockPos(sitPos));
 
         player.getEntityWorld().spawnEntity(chair);
         player.startRiding(chair, true);

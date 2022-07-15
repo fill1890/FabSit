@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
 // maybe rename this later
-public interface PoseTest {
+public class PoseTest {
     /**
      * Check if a player can currently perform a given pose
      *
@@ -19,7 +19,7 @@ public interface PoseTest {
      * @param player player to check posing for
      * @throws PoseException if pose is not valid
      */
-    static void confirmPosable(ServerPlayerEntity player) throws PoseException {
+    public static void confirmPosable(ServerPlayerEntity player) throws PoseException {
         // check if spectating
         if(player.isSpectator())
             throw new PoseException.SpectatorException();
@@ -45,7 +45,7 @@ public interface PoseTest {
             throw new PoseException.BlockOccupied();
     }
 
-    static void confirmEnabled(Pose pose) throws PoseException {
+    public static void confirmEnabled(Pose pose) throws PoseException {
         Config.Poses poses = ConfigManager.getConfig().allow_poses;
         boolean allowed = switch (pose) {
             case LAYING -> poses.lay;

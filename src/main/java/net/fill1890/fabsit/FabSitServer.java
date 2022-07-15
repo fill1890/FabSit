@@ -2,12 +2,14 @@ package net.fill1890.fabsit;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fill1890.fabsit.command.GenericSitBasedCommand;
 import net.fill1890.fabsit.config.ConfigManager;
+import net.fill1890.fabsit.event.UseStairCallback;
 import net.fill1890.fabsit.network.PoseRequestC2SPacket;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
@@ -26,11 +28,14 @@ public class FabSitServer implements DedicatedServerModInitializer {
         ServerPlayConnectionEvents.JOIN.register((ServerPlayNetworkHandler networkHandler, PacketSender sender, MinecraftServer server)
                 -> sender.sendPacket(FabSit.LOADED_CHANNEL, PacketByteBufs.empty()));
 
+        // TODO: per player debounce?
         ServerTickEvents.END_SERVER_TICK.register((MinecraftServer server) -> {
             if (tickDebounce > 0) {
                 tickDebounce--;
             }
         });
+
+        UseBlockCallback.EVENT.register(UseStairCallback::interact);
     }
 
     // if the client has the mod loaded, add them to the supported player registry
