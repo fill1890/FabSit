@@ -39,6 +39,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
     private final BlockPos pos;
 
+    // block ticking during removal
+    // TODO: figure out how to remove this, was here to fix a bug
     protected boolean killing;
 
     protected Position position;
@@ -93,7 +95,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
 
-        if(ConfigManager.getConfig().centre_on_blocks)
+        if(ConfigManager.getConfig().centre_on_blocks || position == Position.IN_BLOCK)
             ConfigManager.occupiedBlocks.remove(this.pos);
 
         // if the pose was npc-based, show the player again when exited

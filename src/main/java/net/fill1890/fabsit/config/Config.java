@@ -17,6 +17,9 @@ public class Config {
     // centre players on the blocks they're posing on
     public boolean centre_on_blocks = false;
 
+    // allow players to right-click a stair or slab to sit
+    public boolean right_click_sit = false;
+
     // permitted poses
     // if LuckPerms is installed it may be better to use it for more specific permissions
     public Poses allow_poses = new Poses();

@@ -67,6 +67,7 @@ public abstract class GenericSitBasedCommand {
 
         Vec3d sitPos = pos;
         if(sitPos == null && ConfigManager.getConfig().centre_on_blocks) {
+            // centre on blocks if enabled in config
             BlockPos block = player.getBlockPos();
             sitPos = new Vec3d(block.getX() + 0.5d, block.getY(), block.getZ() + 0.5d);
         } else if(sitPos == null) {
@@ -74,7 +75,7 @@ public abstract class GenericSitBasedCommand {
         }
 
         PoseManagerEntity chair = new PoseManagerEntity(sitPos, pose, player, inBlock);
-        if(ConfigManager.getConfig().centre_on_blocks)
+        if(ConfigManager.getConfig().centre_on_blocks || inBlock == Position.IN_BLOCK)
             ConfigManager.occupiedBlocks.add(new BlockPos(sitPos));
 
         player.getEntityWorld().spawnEntity(chair);

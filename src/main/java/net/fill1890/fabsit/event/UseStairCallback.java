@@ -24,12 +24,19 @@ public class UseStairCallback {
     public static ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
         // canCollide?
 
-        if(player.isSneaking())
+        // only allow interaction if enabled
+        if(!ConfigManager.getConfig().right_click_sit)
             return ActionResult.PASS;
 
+        // check player isn't spectating, sneaking, currently riding
+        if(player.isSpectator())
+            return ActionResult.PASS;
+        if(player.isSneaking())
+            return ActionResult.PASS;
         if(player.hasVehicle())
             return ActionResult.PASS;
 
+        // player needs to click on an up-facing face
         if(hitResult.getSide() != Direction.UP)
             return ActionResult.PASS;
 
@@ -37,28 +44,34 @@ public class UseStairCallback {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
+        // check block is stair or slab
         if(!(block instanceof SlabBlock || block instanceof StairsBlock))
             return ActionResult.PASS;
 
+        // use the block occupation logic since this forces centering
         if(ConfigManager.occupiedBlocks.contains(pos))
             return ActionResult.PASS;
 
-        if(!player.getStackInHand(hand).isEmpty())
+        // player needs to click with an empty hand
+        if(!player.getStackInHand(Hand.MAIN_HAND).isEmpty())
             return ActionResult.PASS;
 
+        // bottom slab only
         if(block instanceof SlabBlock && !isBottomSlab(state))
             return ActionResult.PASS;
 
+        // bottom stair only
         if(block instanceof StairsBlock && !isBottomStair(state))
             return ActionResult.PASS;
 
+        // check block above is empty
         if(!world.getBlockState(pos.up()).isAir())
             return ActionResult.PASS;
 
-        Vec3d sitPos;
+        // nice looking position
+        Vec3d sitPos = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.4d, pos.getZ() + 0.5d);
 
-        sitPos = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.4d, pos.getZ() + 0.5d);
-
+        // tweak block position for stairs
         if (block instanceof StairsBlock) {
             sitPos = sitPos.add(switch (state.get(StairsBlock.FACING)) {
                 case EAST -> new Vec3d(-0.1, 0, 0);
@@ -69,6 +82,7 @@ public class UseStairCallback {
             });
         }
 
+        // set up the seat
         GenericSitBasedCommand.run((ServerPlayerEntity) player, Pose.SITTING, sitPos, Position.IN_BLOCK);
 
         return ActionResult.PASS;
