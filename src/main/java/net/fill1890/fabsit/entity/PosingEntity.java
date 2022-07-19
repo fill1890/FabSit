@@ -141,11 +141,21 @@ public abstract class PosingEntity extends ServerPlayerEntity {
             p.networkHandler.sendPacket(this.spawnPoserPacket);
             p.networkHandler.sendPacket(this.trackerPoserPacket);
 
+            if(p != player && ConfigManager.getConfig().strongly_remove_players) {
+                p.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(player.getId()));
+            }
+
             // delay removing player from the tablist so the skins are rendered
             delayedRemoves.add(new net.minecraft.util.Pair<>(p, 0));
         });
 
-        this.removingPlayers.forEach(p -> p.networkHandler.sendPacket(this.despawnPoserPacket));
+        this.removingPlayers.forEach(p -> {
+            p.networkHandler.sendPacket(this.despawnPoserPacket);
+            if(p != player && ConfigManager.getConfig().strongly_remove_players){
+                p.networkHandler.sendPacket(new PlayerSpawnS2CPacket(player));
+                p.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true));
+            }
+        });
 
         List<net.minecraft.util.Pair<ServerPlayerEntity, Integer>> removed = new ArrayList<>();
         this.delayedRemoves.forEach(p -> {
@@ -292,12 +302,17 @@ public abstract class PosingEntity extends ServerPlayerEntity {
      * breaking down
      */
     public void destroy() {
-        this.desyncInventories();
-
         this.updatingPlayers.forEach(p -> {
             p.networkHandler.sendPacket(this.removePoserPacket);
             p.networkHandler.sendPacket(this.despawnPoserPacket);
+
+            if(p != player && ConfigManager.getConfig().strongly_remove_players) {
+                p.networkHandler.sendPacket(new PlayerSpawnS2CPacket(player));
+                p.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true));
+            }
         });
+
+        this.desyncInventories();
     }
 
     /**

@@ -59,6 +59,10 @@ Configuration file with default values is as follows:
   // Allow players to sit on a stair or slab by right-clicking
   "right_click_sit": false,
   
+  // adjusts the behaviour when hiding players using /lay and /spin
+  // try disabling this if there is erratic behaviour using these commands
+  "strongly_remove_players": true,
+  
   // server-enabled poses. If LuckPerms is installed,
   // prefer using permissions instead as they are dynamic
   "allow_poses": {

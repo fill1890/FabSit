@@ -20,6 +20,9 @@ public class Config {
     // allow players to right-click a stair or slab to sit
     public boolean right_click_sit = false;
 
+    // Despawn and respawn players rather than set invisible
+    public boolean strongly_remove_players = true;
+
     // permitted poses
     // if LuckPerms is installed it may be better to use it for more specific permissions
     public Poses allow_poses = new Poses();
