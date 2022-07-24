@@ -52,7 +52,7 @@ public abstract class GenericSitBasedCommand {
 
         // toggle sitting if the player was sat down
         if(player.hasVehicle()) {
-            player.dismountVehicle();
+            player.stopRiding();
             return 1;
         }
 
