@@ -21,6 +21,7 @@ public abstract class ServerPlayerEntityMixin {
     private void removeSeat(CallbackInfo ci) {
         ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
         if(self.hasVehicle() && self.getVehicle() instanceof PoseManagerEntity chair) {
+            self.stopRiding();
             chair.kill();
         }
     }
