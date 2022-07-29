@@ -1,6 +1,7 @@
 package net.fill1890.fabsit.mixin;
 
 import net.fill1890.fabsit.config.ConfigManager;
+import net.fill1890.fabsit.entity.PoseManagerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,5 +15,13 @@ public abstract class ServerPlayerEntityMixin {
     @Inject(at = @At("HEAD"), method = "onDisconnect")
     private void removeFromConfig(CallbackInfo ci) {
         ConfigManager.loadedPlayers.remove((ServerPlayerEntity) (Object) this);
+    }
+
+    @Inject(at = @At("HEAD"), method = "onDisconnect")
+    private void removeSeat(CallbackInfo ci) {
+        ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
+        if(self.hasVehicle() && self.getVehicle() instanceof PoseManagerEntity chair) {
+            chair.kill();
+        }
     }
 }
