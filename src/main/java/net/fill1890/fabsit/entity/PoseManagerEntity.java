@@ -15,8 +15,8 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.UUID;
 
-import static net.fill1890.fabsit.mixin.PlayerEntityAccessor.getLEFT_SHOULDER_ENTITY;
-import static net.fill1890.fabsit.mixin.PlayerEntityAccessor.getRIGHT_SHOULDER_ENTITY;
+import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getLEFT_SHOULDER_ENTITY;
+import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getRIGHT_SHOULDER_ENTITY;
 
 /**
  * The PoseManagerEntity provides an interface to a variety of posing actions, currently:

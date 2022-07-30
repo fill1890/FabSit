@@ -14,8 +14,8 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
 
-import static net.fill1890.fabsit.mixin.EntityAccessor.getPOSE;
-import static net.fill1890.fabsit.mixin.LivingEntityAccessor.getSLEEPING_POSITION;
+import static net.fill1890.fabsit.mixin.accessor.EntityAccessor.getPOSE;
+import static net.fill1890.fabsit.mixin.accessor.LivingEntityAccessor.getSLEEPING_POSITION;
 
 /**
  * Laying entity
