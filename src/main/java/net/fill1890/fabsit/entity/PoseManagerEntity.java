@@ -96,7 +96,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
         super.removePassenger(passenger);
 
         if(ConfigManager.getConfig().centre_on_blocks || position == Position.IN_BLOCK)
-            ConfigManager.occupiedBlocks.remove(this.pos);
+            ConfigManager.occupiedBlocks.remove(this.getBlockPos());
 
         // if the pose was npc-based, show the player again when exited
         if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
@@ -151,8 +151,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
         if(used && getPassengerList().size() < 1) { this.kill(); return; }
 
         // rotate the armour stand with the player so the player's legs line up
-        ServerPlayerEntity player = (ServerPlayerEntity) this.getFirstPassenger();
-        if(player != null) {
+        if(this.getFirstPassenger() instanceof ServerPlayerEntity player) {
             this.setYaw(player.getHeadYaw());
 
             // send the action bar status if it hasn't been sent yet
@@ -165,8 +164,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
         }
 
         BlockState sittingBlock = getEntityWorld().getBlockState(switch(this.position){
-            case IN_BLOCK -> pos;
-            case ON_BLOCK -> pos.down();
+            case IN_BLOCK -> this.getBlockPos();
+            case ON_BLOCK -> this.getBlockPos().down();
         });
 
         if(sittingBlock.isAir()) { this.kill(); return; }
