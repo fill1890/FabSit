@@ -5,6 +5,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
+import net.fill1890.fabsit.mixin.accessor.EntitySpawnPacketAccessor;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
@@ -55,7 +56,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
                     System.out.println("address " + connection.getAddress() + " has fabsit, replacing entity");
 
                     //EntitySpawnPacketAccessor.setEntityTypeId(FabSitServer.CHAIR_ENTITY_TYPE);
-                    sendPacket(new EntitySpawnS2CPacket(
+                    /*sendPacket(new EntitySpawnS2CPacket(
                             sp.getId(),
                             sp.getUuid(),
                             sp.getX(),
@@ -67,13 +68,15 @@ public abstract class ServerPlayNetworkHandlerMixin {
                             sp.getEntityData(),
                             new Vec3d(sp.getVelocityX(), sp.getVelocityY(), sp.getVelocityZ()),
                             sp.getHeadYaw()), listener
-                    );
+                    );*/
+                    ((EntitySpawnPacketAccessor) sp).setEntityTypeId(FabSit.CHAIR_ENTITY_TYPE);
+                    sendPacket(sp, listener);
 
                     ci.cancel();
                 } else {
                     System.out.println("address " + connection.getAddress() + " does not have fabsit, replacing");
 
-                    sendPacket(new EntitySpawnS2CPacket(
+                    /*sendPacket(new EntitySpawnS2CPacket(
                             sp.getId(),
                             sp.getUuid(),
                             sp.getX(),
@@ -85,7 +88,11 @@ public abstract class ServerPlayNetworkHandlerMixin {
                             sp.getEntityData(),
                             new Vec3d(sp.getVelocityX(), sp.getVelocityY(), sp.getVelocityZ()),
                             sp.getHeadYaw()), listener
-                    );
+                    );*/
+                    ((EntitySpawnPacketAccessor) sp).setEntityTypeId(EntityType.ARMOR_STAND);
+                    sendPacket(sp, listener);
+
+                    ci.cancel();
                 }
             }
         }
