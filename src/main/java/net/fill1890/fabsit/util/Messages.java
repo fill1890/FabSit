@@ -29,7 +29,7 @@ public class Messages {
 
     // stop posing action message
     public static Text getPoseStopMessage(ServerPlayerEntity player, Pose pose) {
-        if(ConfigManager.loadedPlayers.contains(player)) {
+        if(ConfigManager.loadedPlayers.contains(player.networkHandler.connection.getAddress())) {
             return Text.translatable(ACTION + "stop_" + pose, Text.keybind("key.sneak"));
         } else {
             return Text.of(ConfigManager.LANG.get(ACTION + "stop_" + pose).formatted("the sneak key"));
@@ -38,7 +38,7 @@ public class Messages {
 
     // get either a server or client translated string based on whether the player has the mod
     private static Text getChatMessageByKey(ServerPlayerEntity player, String key_base) {
-        if(ConfigManager.loadedPlayers.contains(player)) {
+        if(ConfigManager.loadedPlayers.contains(player.networkHandler.connection.getAddress())) {
             return Text.translatable(CHAT + key_base);
         } else {
             return Text.of(ConfigManager.LANG.get(CHAT + key_base));

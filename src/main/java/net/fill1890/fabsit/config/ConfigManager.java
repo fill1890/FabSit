@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Map;
@@ -33,7 +34,7 @@ public abstract class ConfigManager {
     public static ArrayList<BlockPos> occupiedBlocks = new ArrayList<>();
 
     // players that have the mod loaded
-    public static final ArrayList<ServerPlayerEntity> loadedPlayers = new ArrayList<>();
+    public static final ArrayList<SocketAddress> loadedPlayers = new ArrayList<>();
 
     public static Config getConfig() {
         return CONFIG;
