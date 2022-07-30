@@ -11,4 +11,8 @@ public interface EntitySpawnPacketAccessor {
     @Mutable
     @Accessor("entityTypeId")
     void setEntityTypeId(EntityType<?> type);
+
+    @Mutable
+    @Accessor("y")
+    void setY(double y);
 }

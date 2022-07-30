@@ -51,6 +51,5 @@ public class FabSit implements ModInitializer {
 		LOGGER.info("FabSit loaded");
 
 		FabricDefaultAttributeRegistry.register(POSER_ENTITY_TYPE, ArmorStandEntity.createLivingAttributes());
-		FabricDefaultAttributeRegistry.register(CHAIR_ENTITY_TYPE, LivingEntity.createLivingAttributes());
 	}
 }

@@ -55,7 +55,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
         super(FabSit.POSER_ENTITY_TYPE, player.getWorld());
         //super(player.getWorld(), pos.x, pos.y, pos.z);
         FabSit.LOGGER.info("Chair at " + pos);
-        this.setPosition(pos.x, pos.y - 0.75, pos.z);
+        this.setPosition(pos.x, pos.y - 1.6, pos.z);
 
         this.setInvisible(true);
         this.setInvulnerable(true);

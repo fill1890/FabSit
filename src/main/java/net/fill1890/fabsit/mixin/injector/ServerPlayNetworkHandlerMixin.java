@@ -55,40 +55,14 @@ public abstract class ServerPlayNetworkHandlerMixin {
                 if (ConfigManager.loadedPlayers.contains(connection.getAddress())) {
                     System.out.println("address " + connection.getAddress() + " has fabsit, replacing entity");
 
-                    //EntitySpawnPacketAccessor.setEntityTypeId(FabSitServer.CHAIR_ENTITY_TYPE);
-                    /*sendPacket(new EntitySpawnS2CPacket(
-                            sp.getId(),
-                            sp.getUuid(),
-                            sp.getX(),
-                            sp.getY(),
-                            sp.getZ(),
-                            sp.getPitch(),
-                            sp.getYaw(),
-                            FabSit.CHAIR_ENTITY_TYPE,
-                            sp.getEntityData(),
-                            new Vec3d(sp.getVelocityX(), sp.getVelocityY(), sp.getVelocityZ()),
-                            sp.getHeadYaw()), listener
-                    );*/
                     ((EntitySpawnPacketAccessor) sp).setEntityTypeId(FabSit.CHAIR_ENTITY_TYPE);
+                    ((EntitySpawnPacketAccessor) sp).setY(sp.getY() + 0.75);
                     sendPacket(sp, listener);
 
                     ci.cancel();
                 } else {
                     System.out.println("address " + connection.getAddress() + " does not have fabsit, replacing");
 
-                    /*sendPacket(new EntitySpawnS2CPacket(
-                            sp.getId(),
-                            sp.getUuid(),
-                            sp.getX(),
-                            sp.getY(),
-                            sp.getZ(),
-                            sp.getPitch(),
-                            sp.getYaw(),
-                            EntityType.ARMOR_STAND,
-                            sp.getEntityData(),
-                            new Vec3d(sp.getVelocityX(), sp.getVelocityY(), sp.getVelocityZ()),
-                            sp.getHeadYaw()), listener
-                    );*/
                     ((EntitySpawnPacketAccessor) sp).setEntityTypeId(EntityType.ARMOR_STAND);
                     sendPacket(sp, listener);
 
