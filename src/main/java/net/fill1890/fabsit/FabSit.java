@@ -28,15 +28,16 @@ public class FabSit implements ModInitializer {
 	public static final EntityType<PoseManagerEntity> POSER_ENTITY_TYPE = Registry.register(
 			Registry.ENTITY_TYPE,
 			new Identifier(MOD_ID, PoseManagerEntity.ENTITY_ID),
-			FabricEntityTypeBuilder.<PoseManagerEntity>create(SpawnGroup.MISC, PoseManagerEntity::new).dimensions(new EntityDimensions(0.5F, 1.975F, true)).build()
+			FabricEntityTypeBuilder.<PoseManagerEntity>create(SpawnGroup.MISC, PoseManagerEntity::new).dimensions(PoseManagerEntity.DIMENSIONS).build()
 	);
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	// packet channel for checking if mod loaded
-	public static final Identifier LOADED_CHANNEL = new Identifier("fabsit:check_loaded");
+	public static final Identifier LOADED_CHANNEL = new Identifier(MOD_ID, "check_loaded");
 	// packet channel for pose requests (keybinds etc.)
-	public static final Identifier REQUEST_CHANNEL = new Identifier("fabsit:request_pose");
+	public static final Identifier REQUEST_CHANNEL = new Identifier(MOD_ID, "request_pose");
+
 
 	@Override
 	public void onInitialize() {

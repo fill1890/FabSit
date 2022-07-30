@@ -6,12 +6,12 @@ import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.util.Messages;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -32,6 +32,7 @@ import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getRIGHT_S
  */
 public class PoseManagerEntity extends ArmorStandEntity {
     public static final String ENTITY_ID = "pose_manager";
+    public static final EntityDimensions DIMENSIONS = new EntityDimensions(0.5F, 1.975F, true);
 
     // has the seat been used - checked for removing later
     private boolean used = false;
@@ -40,8 +41,6 @@ public class PoseManagerEntity extends ArmorStandEntity {
     private final Pose pose;
     // visible npc for posing (if needed)
     private PosingEntity poser;
-
-    private final BlockPos pos;
 
     // block ticking during removal
     // TODO: figure out how to remove this, was here to fix a bug
@@ -63,7 +62,6 @@ public class PoseManagerEntity extends ArmorStandEntity {
         this.setNoGravity(true);
         this.setYaw(player.getYaw()); // TODO: test this properly
 
-        this.pos = new BlockPos(pos);
         this.position = position;
 
         // if the pose is more complex than sitting, create a posing npc
@@ -139,19 +137,25 @@ public class PoseManagerEntity extends ArmorStandEntity {
     }
 
     @Override
-    public boolean canMoveVoluntarily() {
-        return false;
-    }
-
-    @Override
     public boolean collides() {
         return false;
     }
 
-    @Override
-    public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-        return new Vec3d(this.getX(), this.getY() + 1.6, this.getZ());
-    }
+    //@Override
+    //protected void readCustomDataFromNbt(NbtCompound nbt) {}
+
+    //@Override
+    //protected void writeCustomDataToNbt(NbtCompound nbt) {}
+
+    //@Override
+    //public Vec3d updatePassengerForDismount(LivingEntity passenger) {
+    //    return new Vec3d(this.getX(), this.getY() + 1.6, this.getZ());
+    //}
+
+    //@Override
+    //public Packet<?> createSpawnPacket() {
+    //    return new EntitySpawnS2CPacket(this);
+    //}
 
     @Override
     public void kill() {
@@ -164,6 +168,14 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
         super.kill();
     }
+
+    //@Override
+    //public double getMountedHeightOffset() {
+    //    return 0.75D;
+    //}
+
+    //@Override
+    //protected void initDataTracker() {}
 
     @Override
     public void tick() {
