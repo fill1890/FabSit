@@ -1,6 +1,7 @@
 package net.fill1890.fabsit.entity;
 
 import com.mojang.authlib.GameProfile;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.util.Messages;
@@ -8,11 +9,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import java.util.UUID;
@@ -38,7 +42,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
     private boolean used = false;
     // has the action bar status been sent? (needs to be delayed until after addPassenger has executed)
     private boolean statusSent = false;
-    private final Pose pose;
+    private Pose pose = null;
     // visible npc for posing (if needed)
     private PosingEntity poser;
 
@@ -46,14 +50,13 @@ public class PoseManagerEntity extends ArmorStandEntity {
     // TODO: figure out how to remove this, was here to fix a bug
     protected boolean killing;
 
-    protected Position position;
+    protected ChairPosition position;
 
-    public PoseManagerEntity(Vec3d pos, Pose pose, ServerPlayerEntity player, Position position) {
+    public PoseManagerEntity(Vec3d pos, Pose pose, ServerPlayerEntity player, ChairPosition position) {
         // create a new armour stand at the appropriate height
         //super(player.getWorld(), pos.x, pos.y - 1.6, pos.z);
-        super(FabSit.POSER_ENTITY_TYPE, player.getWorld());
+        super(FabSit.RAW_CHAIR_ENTITY_TYPE, player.getWorld());
         //super(player.getWorld(), pos.x, pos.y, pos.z);
-        FabSit.LOGGER.info("Chair at " + pos);
         this.setPosition(pos.x, pos.y - 1.6, pos.z);
 
         this.setInvisible(true);
@@ -80,15 +83,10 @@ public class PoseManagerEntity extends ArmorStandEntity {
     public PoseManagerEntity(EntityType<? extends PoseManagerEntity> entityType, World world) {
         super(entityType, world);
 
-        FabSit.LOGGER.info("called generic seat constructor");
-
         // if this is called directly it's probably because it's after a server start
         // we don't have position or pose info so we just silently fail
-        //this.kill();
-
-        // update: we'll set uhhhh idk fields
-        this.position = Position.ON_BLOCK;
-        this.pose = Pose.SITTING;
+        // this should never be called on the client because the entity is always replaced
+        this.kill();
     }
 
     @Override
@@ -115,7 +113,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
 
-        if(ConfigManager.getConfig().centre_on_blocks || position == Position.IN_BLOCK)
+        if(ConfigManager.getConfig().centre_on_blocks || position == ChairPosition.IN_BLOCK)
             ConfigManager.occupiedBlocks.remove(this.getBlockPos());
 
         // if the pose was npc-based, show the player again when exited
@@ -141,22 +139,6 @@ public class PoseManagerEntity extends ArmorStandEntity {
         return false;
     }
 
-    //@Override
-    //protected void readCustomDataFromNbt(NbtCompound nbt) {}
-
-    //@Override
-    //protected void writeCustomDataToNbt(NbtCompound nbt) {}
-
-    //@Override
-    //public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-    //    return new Vec3d(this.getX(), this.getY() + 1.6, this.getZ());
-    //}
-
-    //@Override
-    //public Packet<?> createSpawnPacket() {
-    //    return new EntitySpawnS2CPacket(this);
-    //}
-
     @Override
     public void kill() {
         this.killing = true;
@@ -168,14 +150,6 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
         super.kill();
     }
-
-    //@Override
-    //public double getMountedHeightOffset() {
-    //    return 0.75D;
-    //}
-
-    //@Override
-    //protected void initDataTracker() {}
 
     @Override
     public void tick() {
@@ -210,5 +184,13 @@ public class PoseManagerEntity extends ArmorStandEntity {
         }
 
         super.tick();
+    }
+
+    public static EntityType<PoseManagerEntity> register() {
+        return Registry.register(
+                Registry.ENTITY_TYPE,
+                new Identifier(FabSit.MOD_ID, ENTITY_ID),
+                FabricEntityTypeBuilder.<PoseManagerEntity>create(SpawnGroup.MISC, PoseManagerEntity::new).dimensions(DIMENSIONS).build()
+        );
     }
 }

@@ -14,7 +14,6 @@ import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,29 +45,26 @@ public abstract class ServerPlayNetworkHandlerMixin {
         }
     }
 
+    // hijack server -> client spawn packets
+    // if spawning a posing entity, change the type
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At("HEAD"), cancellable = true)
     private void fakeChair(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> listener, CallbackInfo ci) {
-        if(packet instanceof EntitySpawnS2CPacket sp) {
-            System.out.println("spawn packet hijacked: " + sp.getEntityTypeId());
-            if(sp.getEntityTypeId() == FabSit.POSER_ENTITY_TYPE) {
-                System.out.println("checking entity for address " + connection.getAddress());
-                if (ConfigManager.loadedPlayers.contains(connection.getAddress())) {
-                    System.out.println("address " + connection.getAddress() + " has fabsit, replacing entity");
 
-                    ((EntitySpawnPacketAccessor) sp).setEntityTypeId(FabSit.CHAIR_ENTITY_TYPE);
-                    ((EntitySpawnPacketAccessor) sp).setY(sp.getY() + 0.75);
-                    sendPacket(sp, listener);
+        // check for spawn packets, then spawn packets for the poser
+        if(packet instanceof EntitySpawnS2CPacket sp && sp.getEntityTypeId() == FabSit.RAW_CHAIR_ENTITY_TYPE) {
 
-                    ci.cancel();
-                } else {
-                    System.out.println("address " + connection.getAddress() + " does not have fabsit, replacing");
+            // if fabsit loaded, replace with the chair entity to hide horse hearts
+            if (ConfigManager.loadedPlayers.contains(connection.getAddress())) {
+                ((EntitySpawnPacketAccessor) sp).setEntityTypeId(FabSit.CHAIR_ENTITY_TYPE);
+                ((EntitySpawnPacketAccessor) sp).setY(sp.getY() + 0.75);
 
-                    ((EntitySpawnPacketAccessor) sp).setEntityTypeId(EntityType.ARMOR_STAND);
-                    sendPacket(sp, listener);
-
-                    ci.cancel();
-                }
+            // if not just replace with an armour stand
+            } else {
+                ((EntitySpawnPacketAccessor) sp).setEntityTypeId(EntityType.ARMOR_STAND);
             }
+
+            sendPacket(sp, listener);
+            ci.cancel();
         }
     }
 }

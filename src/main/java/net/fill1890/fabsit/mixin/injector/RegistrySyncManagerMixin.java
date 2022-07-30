@@ -29,12 +29,9 @@ public abstract class RegistrySyncManagerMixin {
     private static void removeFromSync(
             ServerPlayerEntity player, RegistryPacketHandler handler, CallbackInfo ci, Map<Identifier, Object2IntMap<Identifier>> map
     ) {
-        //System.out.println("injected with map " + map);
-        //FabSit.LOGGER.info("registry injected with map " + map);
-        FabSit.LOGGER.info("syncing for address: " + player.networkHandler.connection.getAddress());
         if(!ConfigManager.loadedPlayers.contains(player.networkHandler.connection.getAddress())) {
-            FabSit.LOGGER.info("Player doesn't have FabSit loaded - scrubbing registry");
 
+            // scrub entities from the syncing registry if the client doesn't have FabSit
             map.get(ENTITY_TYPE).removeInt(new Identifier(FabSit.MOD_ID, ChairEntity.ENTITY_ID));
             map.get(ENTITY_TYPE).removeInt(new Identifier(FabSit.MOD_ID, PoseManagerEntity.ENTITY_ID));
         }

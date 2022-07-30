@@ -19,14 +19,14 @@ public class FabSitServer implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
-        ServerPlayNetworking.registerGlobalReceiver(FabSit.REQUEST_CHANNEL, FabSitServer::handlePoseRequest);
-
         // on player joins, ping them with a fabsit check packet to see if they have the mod loaded
         ServerLoginConnectionEvents.QUERY_START.register(FabSitServer::checkLoaded);
         ServerLoginNetworking.registerGlobalReceiver(FabSit.LOADED_CHANNEL, FabSitServer::handleCheckResponse);
 
+        // keybind receiver
+        ServerPlayNetworking.registerGlobalReceiver(FabSit.REQUEST_CHANNEL, FabSitServer::handlePoseRequest);
 
-        // TODO: per player debounce?
+        // TODO: per player debounce
         ServerTickEvents.END_SERVER_TICK.register((MinecraftServer server) -> {
             if (tickDebounce > 0) {
                 tickDebounce--;
@@ -37,22 +37,11 @@ public class FabSitServer implements DedicatedServerModInitializer {
     }
 
     private static void handleCheckResponse(MinecraftServer server, ServerLoginNetworkHandler handler, boolean b, PacketByteBuf buf, ServerLoginNetworking.LoginSynchronizer synchronizer, PacketSender sender) {
-        server.execute(() -> {
-            FabSit.LOGGER.info("connection info: " + handler.connection.getAddress() + ", understood: " + b);
-            if(b) ConfigManager.loadedPlayers.add(handler.connection.getAddress());
-        });
+        if(b) server.execute(() -> ConfigManager.loadedPlayers.add(handler.connection.getAddress()));
     }
 
     private static void checkLoaded(ServerLoginNetworkHandler handler, MinecraftServer server, PacketSender sender, ServerLoginNetworking.LoginSynchronizer synchronizer) {
         sender.sendPacket(FabSit.LOADED_CHANNEL, PacketByteBufs.empty());
-    }
-
-    // if the client has the mod loaded, add them to the supported player registry
-    private static void handleCheckResponse(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler networkHandler, PacketByteBuf packetByteBuf, PacketSender sender) {
-        server.execute(() -> {
-            //ConfigManager.loadedPlayers.add(player);
-            FabSit.LOGGER.info("Player has FabSit loaded: " + player + " @ " + player.networkHandler.getConnection().getAddress());
-        });
     }
 
     // attempt to pose when requested
