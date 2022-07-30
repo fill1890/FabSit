@@ -1,17 +1,19 @@
 package net.fill1890.fabsit.entity;
 
 import com.mojang.authlib.GameProfile;
+import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.util.Messages;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 import java.util.UUID;
 
@@ -29,6 +31,8 @@ import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getRIGHT_S
  * If needed, the player will then be made invisible and an NPC spawned to pose instead
  */
 public class PoseManagerEntity extends ArmorStandEntity {
+    public static final String ENTITY_ID = "pose_manager";
+
     // has the seat been used - checked for removing later
     private boolean used = false;
     // has the action bar status been sent? (needs to be delayed until after addPassenger has executed)
@@ -47,7 +51,11 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
     public PoseManagerEntity(Vec3d pos, Pose pose, ServerPlayerEntity player, Position position) {
         // create a new armour stand at the appropriate height
-        super(player.getWorld(), pos.x, pos.y - 1.6, pos.z);
+        //super(player.getWorld(), pos.x, pos.y - 1.6, pos.z);
+        super(FabSit.POSER_ENTITY_TYPE, player.getWorld());
+        //super(player.getWorld(), pos.x, pos.y, pos.z);
+        FabSit.LOGGER.info("Chair at " + pos);
+        this.setPosition(pos.x, pos.y - 0.75, pos.z);
 
         this.setInvisible(true);
         this.setInvulnerable(true);
@@ -69,6 +77,20 @@ public class PoseManagerEntity extends ArmorStandEntity {
         }
 
         this.pose = pose;
+    }
+
+    public PoseManagerEntity(EntityType<? extends PoseManagerEntity> entityType, World world) {
+        super(entityType, world);
+
+        FabSit.LOGGER.info("called generic seat constructor");
+
+        // if this is called directly it's probably because it's after a server start
+        // we don't have position or pose info so we just silently fail
+        //this.kill();
+
+        // update: we'll set uhhhh idk fields
+        this.position = Position.ON_BLOCK;
+        this.pose = Pose.SITTING;
     }
 
     @Override
