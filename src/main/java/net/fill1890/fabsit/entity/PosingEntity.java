@@ -3,6 +3,7 @@ package net.fill1890.fabsit.entity;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Pair;
 import net.fill1890.fabsit.config.ConfigManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.*;
@@ -332,7 +333,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     }
 
     @Override
-    public boolean collides() {
+    public boolean collidesWith(Entity entity) {
         return false;
     }
 
