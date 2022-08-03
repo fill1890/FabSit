@@ -8,13 +8,13 @@ import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.error.LoadConfigException;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Map;
@@ -33,7 +33,7 @@ public abstract class ConfigManager {
     public static ArrayList<BlockPos> occupiedBlocks = new ArrayList<>();
 
     // players that have the mod loaded
-    public static final ArrayList<ServerPlayerEntity> loadedPlayers = new ArrayList<>();
+    public static final ArrayList<SocketAddress> loadedPlayers = new ArrayList<>();
 
     public static Config getConfig() {
         return CONFIG;

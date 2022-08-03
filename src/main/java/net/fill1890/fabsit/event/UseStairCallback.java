@@ -3,7 +3,7 @@ package net.fill1890.fabsit.event;
 import net.fill1890.fabsit.command.GenericSitBasedCommand;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.Pose;
-import net.fill1890.fabsit.entity.Position;
+import net.fill1890.fabsit.entity.ChairPosition;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
@@ -83,7 +83,7 @@ public class UseStairCallback {
         }
 
         // set up the seat
-        GenericSitBasedCommand.run((ServerPlayerEntity) player, Pose.SITTING, sitPos, Position.IN_BLOCK);
+        GenericSitBasedCommand.run((ServerPlayerEntity) player, Pose.SITTING, sitPos, ChairPosition.IN_BLOCK);
 
         return ActionResult.PASS;
     }

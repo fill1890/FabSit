@@ -1,22 +1,28 @@
 package net.fill1890.fabsit.entity;
 
 import com.mojang.authlib.GameProfile;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.util.Messages;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
 import java.util.UUID;
 
-import static net.fill1890.fabsit.mixin.PlayerEntityAccessor.getLEFT_SHOULDER_ENTITY;
-import static net.fill1890.fabsit.mixin.PlayerEntityAccessor.getRIGHT_SHOULDER_ENTITY;
+import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getLEFT_SHOULDER_ENTITY;
+import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getRIGHT_SHOULDER_ENTITY;
 
 /**
  * The PoseManagerEntity provides an interface to a variety of posing actions, currently:
@@ -29,25 +35,29 @@ import static net.fill1890.fabsit.mixin.PlayerEntityAccessor.getRIGHT_SHOULDER_E
  * If needed, the player will then be made invisible and an NPC spawned to pose instead
  */
 public class PoseManagerEntity extends ArmorStandEntity {
+    public static final String ENTITY_ID = "pose_manager";
+    public static final EntityDimensions DIMENSIONS = new EntityDimensions(0.5F, 1.975F, true);
+
     // has the seat been used - checked for removing later
     private boolean used = false;
     // has the action bar status been sent? (needs to be delayed until after addPassenger has executed)
     private boolean statusSent = false;
-    private final Pose pose;
+    private Pose pose = null;
     // visible npc for posing (if needed)
     private PosingEntity poser;
-
-    private final BlockPos pos;
 
     // block ticking during removal
     // TODO: figure out how to remove this, was here to fix a bug
     protected boolean killing;
 
-    protected Position position;
+    protected ChairPosition position;
 
-    public PoseManagerEntity(Vec3d pos, Pose pose, ServerPlayerEntity player, Position position) {
+    public PoseManagerEntity(Vec3d pos, Pose pose, ServerPlayerEntity player, ChairPosition position) {
         // create a new armour stand at the appropriate height
-        super(player.getWorld(), pos.x, pos.y - 1.6, pos.z);
+        //super(player.getWorld(), pos.x, pos.y - 1.6, pos.z);
+        super(FabSit.RAW_CHAIR_ENTITY_TYPE, player.getWorld());
+        //super(player.getWorld(), pos.x, pos.y, pos.z);
+        this.setPosition(pos.x, pos.y - 1.6, pos.z);
 
         this.setInvisible(true);
         this.setInvulnerable(true);
@@ -55,7 +65,6 @@ public class PoseManagerEntity extends ArmorStandEntity {
         this.setNoGravity(true);
         this.setYaw(player.getYaw()); // TODO: test this properly
 
-        this.pos = new BlockPos(pos);
         this.position = position;
 
         // if the pose is more complex than sitting, create a posing npc
@@ -69,6 +78,15 @@ public class PoseManagerEntity extends ArmorStandEntity {
         }
 
         this.pose = pose;
+    }
+
+    public PoseManagerEntity(EntityType<? extends PoseManagerEntity> entityType, World world) {
+        super(entityType, world);
+
+        // if this is called directly it's probably because it's after a server start
+        // we don't have position or pose info so we just silently fail
+        // this should never be called on the client because the entity is always replaced
+        this.kill();
     }
 
     @Override
@@ -95,8 +113,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
 
-        if(ConfigManager.getConfig().centre_on_blocks || position == Position.IN_BLOCK)
-            ConfigManager.occupiedBlocks.remove(this.pos);
+        if(ConfigManager.getConfig().centre_on_blocks || position == ChairPosition.IN_BLOCK)
+            ConfigManager.occupiedBlocks.remove(this.getBlockPos());
 
         // if the pose was npc-based, show the player again when exited
         if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
@@ -117,18 +135,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
     }
 
     @Override
-    public boolean canMoveVoluntarily() {
-        return false;
-    }
-
-    @Override
     public boolean collides() {
         return false;
-    }
-
-    @Override
-    public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-        return new Vec3d(this.getX(), this.getY() + 1.6, this.getZ());
     }
 
     @Override
@@ -151,8 +159,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
         if(used && getPassengerList().size() < 1) { this.kill(); return; }
 
         // rotate the armour stand with the player so the player's legs line up
-        ServerPlayerEntity player = (ServerPlayerEntity) this.getFirstPassenger();
-        if(player != null) {
+        if(this.getFirstPassenger() instanceof ServerPlayerEntity player) {
             this.setYaw(player.getHeadYaw());
 
             // send the action bar status if it hasn't been sent yet
@@ -165,8 +172,8 @@ public class PoseManagerEntity extends ArmorStandEntity {
         }
 
         BlockState sittingBlock = getEntityWorld().getBlockState(switch(this.position){
-            case IN_BLOCK -> pos;
-            case ON_BLOCK -> pos.down();
+            case IN_BLOCK -> this.getBlockPos();
+            case ON_BLOCK -> this.getBlockPos().down();
         });
 
         if(sittingBlock.isAir()) { this.kill(); return; }
@@ -177,5 +184,13 @@ public class PoseManagerEntity extends ArmorStandEntity {
         }
 
         super.tick();
+    }
+
+    public static EntityType<PoseManagerEntity> register() {
+        return Registry.register(
+                Registry.ENTITY_TYPE,
+                new Identifier(FabSit.MOD_ID, ENTITY_ID),
+                FabricEntityTypeBuilder.<PoseManagerEntity>create(SpawnGroup.MISC, PoseManagerEntity::new).dimensions(DIMENSIONS).build()
+        );
     }
 }

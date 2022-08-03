@@ -11,8 +11,8 @@ import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.util.InputUtil;
 
 public abstract class PoseKeybinds {
-    private static final String KEY = "key.fabsit.";
-    private static final String CATEGORY = "key.fabsit.category";
+    private static final String KEY = "key." + FabSit.MOD_ID + ".";
+    private static final String CATEGORY = "key." + FabSit.MOD_ID + ".category";
 
     private static final KeyBinding sitKey = emptyKey("sit");
     private static final KeyBinding layKey = emptyKey("lay");

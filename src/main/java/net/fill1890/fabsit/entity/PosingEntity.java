@@ -15,8 +15,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static net.fill1890.fabsit.mixin.PlayerEntityAccessor.getMAIN_ARM;
-import static net.fill1890.fabsit.mixin.PlayerEntityAccessor.getPLAYER_MODEL_PARTS;
+import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getMAIN_ARM;
+import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getPLAYER_MODEL_PARTS;
 import static net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action.ADD_PLAYER;
 import static net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action.REMOVE_PLAYER;
 
