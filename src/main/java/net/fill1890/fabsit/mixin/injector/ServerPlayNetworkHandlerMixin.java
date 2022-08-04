@@ -1,11 +1,10 @@
 package net.fill1890.fabsit.mixin.injector;
 
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
 import net.fill1890.fabsit.mixin.accessor.EntitySpawnPacketAccessor;
+import net.minecraft.class_7648;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
@@ -28,7 +27,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Shadow @Final public ClientConnection connection;
 
-    @Shadow public abstract void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> listener);
+    @Shadow public abstract void sendPacket(Packet<?> packet, @Nullable class_7648 arg);
 
     // Hijack client -> server animation packets
     // If the packet is an animation and the player is posing, transmit the same animation
@@ -47,8 +46,8 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     // hijack server -> client spawn packets
     // if spawning a posing entity, change the type
-    @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At("HEAD"), cancellable = true)
-    private void fakeChair(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> listener, CallbackInfo ci) {
+    @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lnet/minecraft/class_7648;)V", at = @At("HEAD"), cancellable = true)
+    private void fakeChair(Packet<?> packet, class_7648 listener, CallbackInfo ci) {
 
         // check for spawn packets, then spawn packets for the poser
         if(packet instanceof EntitySpawnS2CPacket sp && sp.getEntityTypeId() == FabSit.RAW_CHAIR_ENTITY_TYPE) {
