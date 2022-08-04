@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
+import java.util.Calendar;
 
 /**
  * Generic sit-based command class
@@ -48,6 +49,14 @@ public abstract class GenericSitBasedCommand {
                 Messages.sendByException(player, pose, e);
             return -1;
         }
+
+        long currentTime = Calendar.getInstance().getTimeInMillis();
+        Long lastUse = ConfigManager.lastUses.get(player);
+        // force a 500ms delay between running commands
+        if(lastUse != null) {
+            if(currentTime - lastUse < 500) return -1;
+        }
+        ConfigManager.lastUses.put(player, currentTime);
 
         // toggle sitting if the player was sat down
         if(player.hasVehicle()) {
