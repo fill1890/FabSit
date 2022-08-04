@@ -6,11 +6,13 @@ import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
 import net.fill1890.fabsit.mixin.accessor.EntitySpawnPacketAccessor;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -65,6 +67,19 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
             sendPacket(sp, listener);
             ci.cancel();
+        }
+
+        // check for entity attribute packets, and block for clients with fabsit
+        // clients spit an error into logs when we try to update a non-living entity with living attributes
+        if(packet instanceof EntityAttributesS2CPacket ap) {
+            Entity entity = player.getWorld().getEntityById(ap.getEntityId());
+            if(entity == null) return;
+
+            EntityType<?> type = entity.getType();
+            if(type != FabSit.RAW_CHAIR_ENTITY_TYPE) return;
+
+            // cancel packet if player has fabsit loaded
+            if(ConfigManager.loadedPlayers.contains(connection.getAddress())) ci.cancel();
         }
     }
 }
