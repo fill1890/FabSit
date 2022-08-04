@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.Pose;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
-import net.fill1890.fabsit.entity.Position;
+import net.fill1890.fabsit.entity.ChairPosition;
 import net.fill1890.fabsit.error.PoseException;
 import net.fill1890.fabsit.util.Messages;
 import net.fill1890.fabsit.util.PoseTest;
@@ -37,9 +37,9 @@ public abstract class GenericSitBasedCommand {
         return run(player, pose);
     }
 
-    public static int run(ServerPlayerEntity player, Pose pose) { return run(player, pose, null, Position.ON_BLOCK); }
+    public static int run(ServerPlayerEntity player, Pose pose) { return run(player, pose, null, ChairPosition.ON_BLOCK); }
 
-    public static int run(ServerPlayerEntity player, Pose pose, @Nullable Vec3d pos, Position inBlock) {
+    public static int run(ServerPlayerEntity player, Pose pose, @Nullable Vec3d pos, ChairPosition chairPosition) {
         // check the pose is config-enabled
         try {
             PoseTest.confirmEnabled(pose);
@@ -48,7 +48,6 @@ public abstract class GenericSitBasedCommand {
                 Messages.sendByException(player, pose, e);
             return -1;
         }
-
 
         // toggle sitting if the player was sat down
         if(player.hasVehicle()) {
@@ -74,8 +73,8 @@ public abstract class GenericSitBasedCommand {
             sitPos = player.getPos();
         }
 
-        PoseManagerEntity chair = new PoseManagerEntity(sitPos, pose, player, inBlock);
-        if(ConfigManager.getConfig().centre_on_blocks || inBlock == Position.IN_BLOCK)
+        PoseManagerEntity chair = new PoseManagerEntity(sitPos, pose, player, chairPosition);
+        if(ConfigManager.getConfig().centre_on_blocks || chairPosition == ChairPosition.IN_BLOCK)
             ConfigManager.occupiedBlocks.add(new BlockPos(sitPos));
 
         player.getEntityWorld().spawnEntity(chair);

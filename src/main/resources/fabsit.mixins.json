@@ -4,10 +4,15 @@
   "package": "net.fill1890.fabsit.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "PlayerEntityAccessor",
-    "EntityAccessor",
-    "LivingEntityAccessor",
-    "ServerPlayNetworkHandlerMixin",
-    "ServerPlayerEntityMixin"
-  ]
+    "accessor.PlayerEntityAccessor",
+    "accessor.EntityAccessor",
+    "accessor.LivingEntityAccessor",
+    "accessor.EntitySpawnPacketAccessor",
+    "injector.ServerPlayNetworkHandlerMixin",
+    "injector.ServerPlayerEntityMixin",
+    "injector.RegistrySyncManagerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

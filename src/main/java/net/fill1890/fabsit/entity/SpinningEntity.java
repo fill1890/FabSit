@@ -5,7 +5,7 @@ import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static net.fill1890.fabsit.mixin.LivingEntityAccessor.getLIVING_FLAGS;
+import static net.fill1890.fabsit.mixin.accessor.LivingEntityAccessor.getLIVING_FLAGS;
 
 public class SpinningEntity extends PosingEntity {
     // pivot the poser to face vertically

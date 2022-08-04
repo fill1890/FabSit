@@ -1,4 +1,4 @@
-package net.fill1890.fabsit.mixin;
+package net.fill1890.fabsit.mixin.accessor;
 
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.player.PlayerEntity;

@@ -1,6 +1,6 @@
 package net.fill1890.fabsit.entity;
 
-public enum Position {
+public enum ChairPosition {
     IN_BLOCK,
     ON_BLOCK
 }
