@@ -1,10 +1,17 @@
 package net.fill1890.fabsit.entity;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
+import net.fill1890.fabsit.error.LoadSkinException;
+import net.fill1890.fabsit.util.SkinUtil;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -14,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
 
 import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getMAIN_ARM;
 import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getPLAYER_MODEL_PARTS;
@@ -44,7 +52,6 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     private final EntitiesDestroyS2CPacket despawnPoserPacket;
     // send poser metadata
     protected EntityTrackerUpdateS2CPacket trackerPoserPacket;
-
     // player posing
     protected final ServerPlayerEntity player;
     // list of players that need the poser removed from the tablist
@@ -70,6 +77,12 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         super(player.server, player.getWorld(), gameProfile, null);
 
         this.player = player;
+
+        if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            FabSit.LOGGER.info("FabSit posing client side - attempting to fetch skin manually");
+
+            Executors.newCachedThreadPool().submit(this::fetchSkinAndUpdate);
+        }
 
         // poser shouldn't take damage
         // TODO: should this be changed to make the player invulnerable? so hit boxes are correct
@@ -313,6 +326,25 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         });
 
         this.desyncInventories();
+    }
+
+    private void fetchSkinAndUpdate() {
+        NbtCompound skinNbt = null;
+
+        try {
+            skinNbt = SkinUtil.fetchByUuid(this.player.getUuid());
+        } catch (LoadSkinException e) {
+            FabSit.LOGGER.error("Could not load skin for NPC for " + this.player.getName().getString() + ", got " + e);
+        }
+
+        if(skinNbt == null) return;
+
+        String value = skinNbt.getString("value");
+        String signature = skinNbt.getString("signature");
+
+        this.getGameProfile().getProperties().put("textures", new Property("textures", value, signature));
+
+        FabSit.LOGGER.info("Updated skin for " + this.player.getName().getString());
     }
 
     /**
