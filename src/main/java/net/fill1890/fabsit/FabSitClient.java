@@ -23,20 +23,25 @@ public class FabSitClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // handler for if the server pings us with a loaded check
         ClientLoginNetworking.registerGlobalReceiver(FabSit.LOADED_CHANNEL, FabSitClient::checkPacketReply);
 
+        // renderer is required for all registered entities, but we don't want to render them
+        // so pass in an empty renderer
         EntityRendererRegistry.register(FabSit.CHAIR_ENTITY_TYPE, EmptyRenderer::new);
         EntityRendererRegistry.register(FabSit.RAW_CHAIR_ENTITY_TYPE, EmptyRenderer::new);
 
+        // keybinds for posing
         PoseKeybinds.register();
     }
 
     private static CompletableFuture<PacketByteBuf> checkPacketReply(MinecraftClient client, ClientLoginNetworkHandler handler, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> listener) {
+        // respond to loaded check
         return CompletableFuture.completedFuture(PacketByteBufs.empty());
     }
 
+    // empty renderer - will never render as shouldRender is always false
     private static class EmptyRenderer extends EntityRenderer<Entity> {
-
         protected EmptyRenderer(EntityRendererFactory.Context ctx) { super(ctx); }
 
         @Override

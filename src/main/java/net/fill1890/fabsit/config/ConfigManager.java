@@ -53,7 +53,7 @@ public abstract class ConfigManager {
         BufferedWriter writer;
 
         // try to load the config file
-        File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "fabsit.json");
+        File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), FabSit.MOD_ID + ".json");
 
         if(configFile.exists()) {
             // exists: read into config object
@@ -104,7 +104,7 @@ public abstract class ConfigManager {
         String json;
 
         // try to load the config file
-        localeFile = ConfigManager.class.getClassLoader().getResourceAsStream("assets/fabsit/lang/" + locale + ".json");
+        localeFile = ConfigManager.class.getClassLoader().getResourceAsStream("assets/" + FabSit.MOD_ID + "/lang/" + locale + ".json");
 
         if(localeFile == null && !locale.equals("en_us")) {
             // not found - default to en_us

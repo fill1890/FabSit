@@ -4,6 +4,9 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fill1890.fabsit.entity.Pose;
 import net.minecraft.network.PacketByteBuf;
 
+/**
+ * Pose request packet, client -> server
+ */
 public class PoseRequestC2SPacket {
     private final Pose pose;
 

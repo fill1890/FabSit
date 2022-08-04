@@ -22,8 +22,6 @@ import net.minecraft.world.World;
 
 public class UseStairCallback {
     public static ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
-        // canCollide?
-
         // only allow interaction if enabled
         if(!ConfigManager.getConfig().right_click_sit)
             return ActionResult.PASS;

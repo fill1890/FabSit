@@ -24,6 +24,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * Hijack the network handler for various reasons
+ */
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow public ServerPlayerEntity player;
@@ -32,23 +35,39 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Shadow public abstract void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> listener);
 
-    // Hijack client -> server animation packets
-    // If the packet is an animation and the player is posing, transmit the same animation
-    // from the posing npc
+    /**
+     * Listen for player hand swings
+     * <br>
+     * If the player is currently posing and has a posing NPC, transmit a swing packet to nearby players
+     * <br>
+     * @param packet passed from mixin function
+     * @param ci mixin callback info
+     */
     @Inject(method = "onHandSwing", at = @At("HEAD"))
     private void copyHandSwing(HandSwingC2SPacket packet, CallbackInfo ci) {
-        if(this.player.hasVehicle()) {
-            if(this.player.getVehicle() instanceof PoseManagerEntity poseManager) {
-                poseManager.animate(switch (packet.getHand()) {
-                    case MAIN_HAND -> EntityAnimationS2CPacket.SWING_MAIN_HAND;
-                    case OFF_HAND -> EntityAnimationS2CPacket.SWING_OFF_HAND;
-                });
-            }
+        // if player is currently posing
+        if(this.player.hasVehicle() && this.player.getVehicle() instanceof PoseManagerEntity poseManager) {
+            // animate if need be
+            poseManager.animate(switch (packet.getHand()) {
+                case MAIN_HAND -> EntityAnimationS2CPacket.SWING_MAIN_HAND;
+                case OFF_HAND -> EntityAnimationS2CPacket.SWING_OFF_HAND;
+            });
         }
     }
 
-    // hijack server -> client spawn packets
-    // if spawning a posing entity, change the type
+    /**
+     * Hijack server -> client spawn packets and server -> client attribute updates
+     * <br>
+     * Spawn packets: If the server is trying to spawn a pose manager, overwrite with either an armor stand or a chair
+     * depending on whether the client has fabsit loaded
+     * <br>
+     * Attribute updates: If the client has fabsit, error will be dumped in logs if we try to apply armor stand
+     * attributes to a non-living entity, so block them
+     *
+     * @param packet passed from mixin function
+     * @param listener passed from mixin function
+     * @param ci mixin callback info
+     */
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At("HEAD"), cancellable = true)
     private void fakeChair(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> listener, CallbackInfo ci) {
 
@@ -65,7 +84,9 @@ public abstract class ServerPlayNetworkHandlerMixin {
                 ((EntitySpawnPacketAccessor) sp).setEntityTypeId(EntityType.ARMOR_STAND);
             }
 
+            // send the updated packet
             sendPacket(sp, listener);
+            // prevent further packet action
             ci.cancel();
         }
 
