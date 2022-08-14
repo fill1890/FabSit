@@ -19,7 +19,7 @@ public class PoseTest {
      * @param player player to check posing for
      * @throws PoseException if pose is not valid
      */
-    public static void confirmPosable(ServerPlayerEntity player) throws PoseException {
+    public static void confirmPosable(ServerPlayerEntity player, BlockPos target) throws PoseException {
         // check if spectating
         if(player.isSpectator())
             throw new PoseException.SpectatorException();
@@ -41,8 +41,12 @@ public class PoseTest {
         if(below.isAir() && !ConfigManager.getConfig().allow_posing_midair)
             throw new PoseException.MidairException();
 
-        if(ConfigManager.occupiedBlocks.contains(player.getBlockPos()))
+        if(
+                (ConfigManager.getConfig().centre_on_blocks || ConfigManager.getConfig().right_click_sit)
+                && ConfigManager.occupiedBlocks.contains(target)
+        ) {
             throw new PoseException.BlockOccupied();
+        }
     }
 
     public static void confirmEnabled(Pose pose) throws PoseException {

@@ -71,15 +71,6 @@ public abstract class GenericSitBasedCommand {
             return 1;
         }
 
-        // confirm player can pose right now
-        try {
-            PoseTest.confirmPosable(player);
-        } catch (PoseException e) {
-            if(ConfigManager.getConfig().enable_messages.pose_errors)
-                Messages.sendByException(player, pose, e);
-            return -1;
-        }
-
         Vec3d sitPos = pos;
         if(sitPos == null && ConfigManager.getConfig().centre_on_blocks) {
             // centre on blocks if enabled in config
@@ -88,6 +79,16 @@ public abstract class GenericSitBasedCommand {
         } else if(sitPos == null) {
             // use the current player position otherwise
             sitPos = player.getPos();
+        }
+
+        // confirm player can pose right now
+        try {
+            // TODO: make this nicer (no down(2))
+            PoseTest.confirmPosable(player, new BlockPos(sitPos).down(2));
+        } catch (PoseException e) {
+            if(ConfigManager.getConfig().enable_messages.pose_errors)
+                Messages.sendByException(player, pose, e);
+            return -1;
         }
 
         // set up the chair and register the block as occupied if config-enabled or using stair/slab
