@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
+import java.util.Calendar;
 
 /**
  * Generic sit-based command class
@@ -23,7 +24,9 @@ import javax.annotation.Nullable;
  * Implementation details taken from <a href="https://github.com/Gecolay/GSit">GSit</a>
  */
 public abstract class GenericSitBasedCommand {
+    // run from a command
     public static int run(CommandContext<ServerCommandSource> context, Pose pose) {
+        // confirm command was run by player and not console, command block, etc
         final ServerCommandSource source = context.getSource();
         ServerPlayerEntity player;
 
@@ -34,11 +37,16 @@ public abstract class GenericSitBasedCommand {
             return -1;
         }
 
+        // run as normal
         return run(player, pose);
     }
 
+    // run either from command or from packet request
     public static int run(ServerPlayerEntity player, Pose pose) { return run(player, pose, null, ChairPosition.ON_BLOCK); }
 
+    // run with a specific sit position and block-relative location
+    // extra parameters for sitting on stairs and slabs
+    // position to sit at, and whether sitting on or in (slab/stair) a block
     public static int run(ServerPlayerEntity player, Pose pose, @Nullable Vec3d pos, ChairPosition chairPosition) {
         // check the pose is config-enabled
         try {
@@ -48,6 +56,14 @@ public abstract class GenericSitBasedCommand {
                 Messages.sendByException(player, pose, e);
             return -1;
         }
+
+        // force a 500ms delay between running commands
+        long currentTime = Calendar.getInstance().getTimeInMillis();
+        Long lastUse = ConfigManager.lastUses.get(player);
+        if(lastUse != null) {
+            if(currentTime - lastUse < 500) return -1;
+        }
+        ConfigManager.lastUses.put(player, currentTime);
 
         // toggle sitting if the player was sat down
         if(player.hasVehicle()) {
@@ -70,9 +86,11 @@ public abstract class GenericSitBasedCommand {
             BlockPos block = player.getBlockPos();
             sitPos = new Vec3d(block.getX() + 0.5d, block.getY(), block.getZ() + 0.5d);
         } else if(sitPos == null) {
+            // use the current player position otherwise
             sitPos = player.getPos();
         }
 
+        // set up the chair and register the block as occupied if config-enabled or using stair/slab
         PoseManagerEntity chair = new PoseManagerEntity(sitPos, pose, player, chairPosition);
 
         player.getEntityWorld().spawnEntity(chair);

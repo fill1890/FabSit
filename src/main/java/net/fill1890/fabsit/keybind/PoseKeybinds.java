@@ -11,9 +11,11 @@ import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.util.InputUtil;
 
 public abstract class PoseKeybinds {
+    // translation keys for controls screen
     private static final String KEY = "key." + FabSit.MOD_ID + ".";
     private static final String CATEGORY = "key." + FabSit.MOD_ID + ".category";
 
+    // sit, lay, and spin hotkeys
     private static final KeyBinding sitKey = emptyKey("sit");
     private static final KeyBinding layKey = emptyKey("lay");
     private static final KeyBinding spinKey = emptyKey("spin");

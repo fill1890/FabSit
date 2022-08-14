@@ -1,5 +1,8 @@
 package net.fill1890.fabsit.entity;
 
+/*
+Possible poses
+ */
 public enum Pose {
     SITTING("sitting"),
     LAYING("laying"),
