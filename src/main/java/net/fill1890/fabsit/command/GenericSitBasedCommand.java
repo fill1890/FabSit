@@ -74,8 +74,6 @@ public abstract class GenericSitBasedCommand {
         }
 
         PoseManagerEntity chair = new PoseManagerEntity(sitPos, pose, player, chairPosition);
-        if(ConfigManager.getConfig().centre_on_blocks || chairPosition == ChairPosition.IN_BLOCK)
-            ConfigManager.occupiedBlocks.add(new BlockPos(sitPos));
 
         player.getEntityWorld().spawnEntity(chair);
         player.startRiding(chair, true);

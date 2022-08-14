@@ -106,6 +106,9 @@ public class PoseManagerEntity extends ArmorStandEntity {
             passenger.getDataTracker().set(getRIGHT_SHOULDER_ENTITY(), new NbtCompound());
         }
 
+        if(ConfigManager.getConfig().centre_on_blocks || position == ChairPosition.IN_BLOCK)
+            ConfigManager.occupiedBlocks.add(this.getBlockPos());
+
         used = true;
     }
 
