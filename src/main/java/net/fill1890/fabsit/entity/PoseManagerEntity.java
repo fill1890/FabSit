@@ -139,7 +139,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
     }
 
     @Override
-    public boolean collides() {
+    public boolean collidesWith(Entity entity) {
         return false;
     }
 

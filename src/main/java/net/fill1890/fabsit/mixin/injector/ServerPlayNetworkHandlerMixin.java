@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
@@ -33,7 +34,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Shadow @Final public ClientConnection connection;
 
-    @Shadow public abstract void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> listener);
+    @Shadow public abstract void sendPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks);
 
     /**
      * Listen for player hand swings
@@ -65,11 +66,12 @@ public abstract class ServerPlayNetworkHandlerMixin {
      * attributes to a non-living entity, so block them
      *
      * @param packet passed from mixin function
-     * @param listener passed from mixin function
+     * @param callbacks passed from mixin function
      * @param ci mixin callback info
      */
-    @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At("HEAD"), cancellable = true)
-    private void fakeChair(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> listener, CallbackInfo ci) {
+    //@Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("HEAD"), cancellable = true)
+    private void fakeChair(Packet<?> packet, PacketCallbacks callbacks, CallbackInfo ci) {
 
         // check for spawn packets, then spawn packets for the poser
         if(packet instanceof EntitySpawnS2CPacket sp && sp.getEntityTypeId() == FabSit.RAW_CHAIR_ENTITY_TYPE) {
@@ -85,7 +87,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             }
 
             // send the updated packet
-            sendPacket(sp, listener);
+            sendPacket(sp, callbacks);
             // prevent further packet action
             ci.cancel();
         }

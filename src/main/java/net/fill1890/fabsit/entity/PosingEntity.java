@@ -9,6 +9,7 @@ import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.error.LoadSkinException;
 import net.fill1890.fabsit.util.SkinUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -371,7 +372,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     }
 
     @Override
-    public boolean collides() {
+    public boolean collidesWith(Entity entity) {
         return false;
     }
 
