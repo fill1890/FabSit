@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "fabsit",
-  "version": "1.5.2+1.19",
+  "version": "1.5.3+1.19",
 
   "name": "FabSit",
   "description": "Sit in Fabric",
