@@ -32,7 +32,7 @@ public class Messages {
         if(ConfigManager.loadedPlayers.contains(player.networkHandler.connection.getAddress())) {
             return Text.translatable(ACTION + "stop_" + pose, Text.keybind("key.sneak"));
         } else {
-            return Text.of(ConfigManager.LANG.get(ACTION + "stop_" + pose).formatted("the sneak key"));
+            return Text.of(ConfigManager.LANG.get(ACTION + "stop_" + pose).formatted(ConfigManager.LANG.get("key.fabsit.sneak")));
         }
     }
 

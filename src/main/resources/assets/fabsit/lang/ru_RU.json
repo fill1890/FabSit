@@ -1,0 +1,24 @@
+{
+  "action.fabsit.stop_spinning": "Нажмите %s чтобы прекратить вращаться",
+  "action.fabsit.stop_laying": "Нажмите %s чтобы встать",
+  "action.fabsit.stop_sitting": "Нажмите %s чтобы встать",
+
+  "chat.fabsit.sit_air_error": "§4Вы не можете сидеть в пустоте!",
+  "chat.fabsit.pose_air_error": "§4Вы не можете задать позу в пустоте!",
+  "chat.fabsit.sit_spectator_error": "§4Вы не можете сидеть в режиме спектатора",
+  "chat.fabsit.pose_spectator_error": "§4Вы не можете задать позу в режиме спектатора!",
+  "chat.fabsit.sit_state_error": "§4Сейчас нельзя сидеть!",
+  "chat.fabsit.pose_state_error": "§4Сейчас нельзя задать позу!",
+  "chat.fabsit.sit_block_occupied": "На этом блоке уже кто-то сидит!",
+  "chat.fabsit.pose_block_occupied": "На этом блоке уже кто-то задал позу!",
+
+  "chat.fabsit.reload_success": "Конфигурация перезагружена!",
+  "chat.fabsit.reload_error": "Ошибка при перезагрузки конфигурации. Проверьте консоль сервера!",
+
+  "key.fabsit.category": "FabSit",
+  "key.fabsit.sit": "Сидеть",
+  "key.fabsit.lay": "Ползать",
+  "key.fabsit.spin": "Крутиться",
+
+  "key.fabsit.sneak": "ключ скрытности"
+}
