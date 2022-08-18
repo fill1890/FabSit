@@ -18,5 +18,7 @@
   "key.fabsit.category": "FabSit",
   "key.fabsit.sit": "Sit down",
   "key.fabsit.lay": "Lay down",
-  "key.fabsit.spin": "Spin"
+  "key.fabsit.spin": "Spin",
+
+  "key.fabsit.sneak": "the sneak key"
 }
