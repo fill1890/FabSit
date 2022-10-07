@@ -4,6 +4,8 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.RaycastContext;
+import org.lwjgl.system.MathUtil;
 
 import static net.fill1890.fabsit.mixin.accessor.LivingEntityAccessor.getLIVING_FLAGS;
 
@@ -13,6 +15,8 @@ public class SpinningEntity extends PosingEntity {
 
     public SpinningEntity(ServerPlayerEntity player, GameProfile gameProfile) {
         super(player, gameProfile);
+        
+        setPosition(getPos().add(Math.sin(player.getPitch()), 0, Math.cos(player.getPitch())));
 
         // set spinning state
         this.getDataTracker().set(getLIVING_FLAGS(), (byte) 0x04);

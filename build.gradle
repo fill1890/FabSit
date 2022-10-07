@@ -1,5 +1,6 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
+//	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'org.quiltmc.loom' version '0.12.+'
 	id 'maven-publish'
 }
 
@@ -18,20 +19,32 @@ repositories {
 	// for more information about repositories.
 
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+	maven { url 'https://maven.quiltmc.org/repository/release' }
+	maven { url 'https://maven.nucleoid.xyz' }
 }
 
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+//	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+//	mappings loom.layered {
+//		addLayer quiltMappings.mappings("org.quiltmc:quilt-mappings:1.19.2+build.3:v2")
+//		// officialMojangMappings() // Uncomment if you want to use Mojang mappings as your primary mappings, falling back on QM for parameters and Javadocs
+//	}
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+//	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "org.quiltmc:quilt-loader:0.17.1"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+//	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	// Permissions API
 	modImplementation include("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+	modImplementation include("eu.pb4:polymer:0.2.16+1.19.2")
+	modImplementation("org.quiltmc.quilted-fabric-api:quilted-fabric-api:4.0.0-beta.7+0.59.0-1.19.2") {
+		exclude group: "org.quiltmc.quilted-fabric-api", module: "fabric-gametest-api-v1"
+	}
 
-	// Uncomment the following line to enable the deprecated Fabric API modules. 
+	// Uncomment the following line to enable the deprecated Fabric API modules.
 	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
 
 	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
@@ -79,3 +92,21 @@ publishing {
 		// retrieving dependencies.
 	}
 }
+
+project.afterEvaluate {
+    loom {
+        runs {
+            configureEach {
+                property("fabric.development=true")
+                property("mixin.hotSwap")
+                def mixinJarFile = configurations.compileClasspath.files {
+                    it.group == "net.fabricmc" && it.name == "sponge-mixin"
+                }.first()
+                vmArg("-javaagent:$mixinJarFile")
+
+                ideConfigGenerated(true)
+            }
+        }
+    }
+}
+

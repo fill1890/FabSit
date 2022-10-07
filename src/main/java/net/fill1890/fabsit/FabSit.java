@@ -1,5 +1,6 @@
 package net.fill1890.fabsit;
 
+import eu.pb4.polymer.api.entity.PolymerEntityUtils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fill1890.fabsit.config.ConfigManager;
@@ -31,6 +32,8 @@ public class FabSit implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		PolymerEntityUtils.registerType(CHAIR_ENTITY_TYPE, RAW_CHAIR_ENTITY_TYPE);
+		
 		Commands.register();
 
 		FabricDefaultAttributeRegistry.register(RAW_CHAIR_ENTITY_TYPE, ArmorStandEntity.createLivingAttributes());
