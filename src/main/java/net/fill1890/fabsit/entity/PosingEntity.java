@@ -3,24 +3,31 @@ package net.fill1890.fabsit.entity;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
+import eu.pb4.polymer.api.entity.PolymerEntity;
+import eu.pb4.polymer.mixin.entity.VillagerEntityAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.error.LoadSkinException;
+import net.fill1890.fabsit.mixin.accessor.EntityAccessor;
 import net.fill1890.fabsit.util.SkinUtil;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
@@ -42,7 +49,7 @@ import static net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action.R
  * and call sendUpdates() and destroy()
  * <br>
  */
-public abstract class PosingEntity extends ServerPlayerEntity {
+public abstract class PosingEntity extends ServerPlayerEntity implements PolymerEntity {
     // add poser to the tablist
     private final PlayerListS2CPacket addPoserPacket;
     // remove poser from the tablist
@@ -353,6 +360,17 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         this.getGameProfile().getProperties().put("textures", new Property("textures", value, signature));
 
         FabSit.LOGGER.info("Updated skin for " + this.player.getName().getString());
+    }
+    
+    @Override
+    public EntityType<?> getPolymerEntityType() {
+        return EntityType.PLAYER;
+    }
+    
+    @Override
+    public void modifyTrackedData(List<DataTracker.Entry<?>> data) {
+        data.add(new DataTracker.Entry<>(EntityAccessor.getNAME_VISIBLE(), false));
+        data.add(new DataTracker.Entry<>(EntityAccessor.getCUSTOM_NAME(), Optional.of(Text.of("fabsit_chair"))));
     }
 
     /**

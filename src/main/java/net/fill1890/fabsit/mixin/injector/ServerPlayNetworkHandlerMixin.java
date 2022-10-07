@@ -31,11 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow public ServerPlayerEntity player;
-
-    @Shadow @Final public ClientConnection connection;
-
-    @Shadow public abstract void sendPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks);
-
+    
     /**
      * Listen for player hand swings
      * <br>
@@ -53,56 +49,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
                 case MAIN_HAND -> EntityAnimationS2CPacket.SWING_MAIN_HAND;
                 case OFF_HAND -> EntityAnimationS2CPacket.SWING_OFF_HAND;
             });
-        }
-    }
-
-    /**
-     * Hijack server -> client spawn packets and server -> client attribute updates
-     * <br>
-     * Spawn packets: If the server is trying to spawn a pose manager, overwrite with either an armor stand or a chair
-     * depending on whether the client has fabsit loaded
-     * <br>
-     * Attribute updates: If the client has fabsit, error will be dumped in logs if we try to apply armor stand
-     * attributes to a non-living entity, so block them
-     *
-     * @param packet passed from mixin function
-     * @param callbacks passed from mixin function
-     * @param ci mixin callback info
-     */
-    //@Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At("HEAD"), cancellable = true)
-    @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("HEAD"), cancellable = true)
-    private void fakeChair(Packet<?> packet, PacketCallbacks callbacks, CallbackInfo ci) {
-
-        // check for spawn packets, then spawn packets for the poser
-        if(packet instanceof EntitySpawnS2CPacket sp && sp.getEntityTypeId() == FabSit.RAW_CHAIR_ENTITY_TYPE) {
-
-            // if fabsit loaded, replace with the chair entity to hide horse hearts
-            if (ConfigManager.loadedPlayers.contains(connection.getAddress())) {
-                ((EntitySpawnPacketAccessor) sp).setEntityTypeId(FabSit.CHAIR_ENTITY_TYPE);
-                ((EntitySpawnPacketAccessor) sp).setY(sp.getY() + 0.75);
-
-            // if not just replace with an armour stand
-            } else {
-                ((EntitySpawnPacketAccessor) sp).setEntityTypeId(EntityType.ARMOR_STAND);
-            }
-
-            // send the updated packet
-            sendPacket(sp, callbacks);
-            // prevent further packet action
-            ci.cancel();
-        }
-
-        // check for entity attribute packets, and block for clients with fabsit
-        // clients spit an error into logs when we try to update a non-living entity with living attributes
-        if(packet instanceof EntityAttributesS2CPacket ap) {
-            Entity entity = player.getWorld().getEntityById(ap.getEntityId());
-            if(entity == null) return;
-
-            EntityType<?> type = entity.getType();
-            if(type != FabSit.RAW_CHAIR_ENTITY_TYPE) return;
-
-            // cancel packet if player has fabsit loaded
-            if(ConfigManager.loadedPlayers.contains(connection.getAddress())) ci.cancel();
         }
     }
 }

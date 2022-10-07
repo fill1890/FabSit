@@ -1,6 +1,8 @@
 package net.fill1890.fabsit.entity;
 
 import com.mojang.authlib.GameProfile;
+import eu.pb4.polymer.api.entity.PolymerEntity;
+import eu.pb4.polymer.api.entity.PolymerEntityUtils;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
@@ -34,7 +36,7 @@ import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getRIGHT_S
  * <br>
  * If needed, the player will then be made invisible and an NPC spawned to pose instead
  */
-public class PoseManagerEntity extends ArmorStandEntity {
+public class PoseManagerEntity extends ArmorStandEntity implements PolymerEntity {
     public static final String ENTITY_ID = "pose_manager";
     public static final EntityDimensions DIMENSIONS = new EntityDimensions(0.5F, 1.975F, true);
     public static final String ENTITY_NAME = "FABSEAT";
@@ -136,6 +138,11 @@ public class PoseManagerEntity extends ArmorStandEntity {
         if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
             poser.animate(id);
         }
+    }
+    
+        @Override
+    public EntityType<?> getPolymerEntityType() {
+        return EntityType.ARMOR_STAND;
     }
 
     @Override

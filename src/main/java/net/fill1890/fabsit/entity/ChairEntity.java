@@ -1,5 +1,7 @@
 package net.fill1890.fabsit.entity;
 
+import eu.pb4.polymer.api.entity.PolymerEntity;
+import eu.pb4.polymer.api.entity.PolymerEntityUtils;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fill1890.fabsit.FabSit;
 import net.minecraft.entity.Entity;
@@ -13,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-public class ChairEntity extends Entity {
+public class ChairEntity extends Entity implements PolymerEntity {
     public static final String ENTITY_ID = "entity_chair";
     public static final EntityDimensions DIMENSIONS = EntityDimensions.fixed(0.01F, 1.00F);
 
@@ -25,8 +27,14 @@ public class ChairEntity extends Entity {
         return Registry.register(
                 Registry.ENTITY_TYPE,
                 new Identifier(FabSit.MOD_ID, ENTITY_ID),
-                FabricEntityTypeBuilder.create(SpawnGroup.MISC, ChairEntity::new).dimensions(DIMENSIONS).build()
+                FabricEntityTypeBuilder.create(SpawnGroup.MISC, ChairEntity::new)
+                                       .dimensions(DIMENSIONS)
+                                       .build()
         );
+    }
+        @Override
+    public EntityType<?> getPolymerEntityType() {
+        return EntityType.ARMOR_STAND;
     }
 
     @Override
