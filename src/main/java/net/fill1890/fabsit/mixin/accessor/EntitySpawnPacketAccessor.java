@@ -19,7 +19,7 @@ public interface EntitySpawnPacketAccessor {
      * @param type new entity type
      */
     @Mutable
-    @Accessor("entityTypeId")
+    @Accessor("entityType")
     void setEntityTypeId(EntityType<?> type);
 
     /**

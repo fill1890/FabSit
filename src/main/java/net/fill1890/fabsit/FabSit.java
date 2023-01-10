@@ -19,6 +19,7 @@ public class FabSit implements ModInitializer {
 	public static final String MOD_ID = "fabsit";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+
 	// Pose manager and chair entities
 	public static final EntityType<PoseManagerEntity> RAW_CHAIR_ENTITY_TYPE = PoseManagerEntity.register();
 	public static final EntityType<ChairEntity> CHAIR_ENTITY_TYPE = ChairEntity.register();

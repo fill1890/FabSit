@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "fabsit",
-  "version": "1.5.4+1.19",
+  "version": "1.5.4+1.19.3",
 
   "name": "FabSit",
   "description": "Sit in Fabric",
@@ -32,7 +32,7 @@
 
   "depends": {
     "fabricloader": ">=0.14.6",
-    "fabric": "*",
+    "fabric-api": "*",
     "minecraft": "~1.19",
     "java": ">=17"
   }

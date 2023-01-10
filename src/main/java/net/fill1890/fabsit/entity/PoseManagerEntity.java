@@ -12,11 +12,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.World;
 
 import java.util.UUID;
@@ -196,7 +197,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
     public static EntityType<PoseManagerEntity> register() {
         return Registry.register(
-                Registry.ENTITY_TYPE,
+                Registries.ENTITY_TYPE,
                 new Identifier(FabSit.MOD_ID, ENTITY_ID),
                 FabricEntityTypeBuilder.<PoseManagerEntity>create(SpawnGroup.MISC, PoseManagerEntity::new).dimensions(DIMENSIONS).build()
         );

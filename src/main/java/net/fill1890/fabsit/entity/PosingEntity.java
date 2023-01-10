@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getMAIN_ARM;
 import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getPLAYER_MODEL_PARTS;
 import static net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action.ADD_PLAYER;
-import static net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action.REMOVE_PLAYER;
 
 /**
  * The PosingEntity class gives a generic entity for posing <br>
@@ -46,7 +45,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     // add poser to the tablist
     private final PlayerListS2CPacket addPoserPacket;
     // remove poser from the tablist
-    private final PlayerListS2CPacket removePoserPacket;
+    private final PlayerRemoveS2CPacket removePoserPacket;
     // spawn poser in the world
     private final PlayerSpawnS2CPacket spawnPoserPacket;
     // remove poser from the world
@@ -75,7 +74,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
      * @param gameProfile game profile of player (should have different UUID)
      */
     public PosingEntity(ServerPlayerEntity player, GameProfile gameProfile) {
-        super(player.server, player.getWorld(), gameProfile, null);
+        super(player.server, player.getWorld(), gameProfile);
 
         this.player = player;
 
@@ -107,13 +106,13 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         // adds the poser to the tablist so minecraft shows the player
         this.addPoserPacket = new PlayerListS2CPacket(ADD_PLAYER, this);
         // remove the poser from the tablist
-        this.removePoserPacket = new PlayerListS2CPacket(REMOVE_PLAYER, this);
+        this.removePoserPacket = new PlayerRemoveS2CPacket(List.of(this.getUuid()));
         // spawn the poser
         this.spawnPoserPacket = new PlayerSpawnS2CPacket(this);
         // despawn the poser
         this.despawnPoserPacket = new EntitiesDestroyS2CPacket(this.getId());
         // update the poser metadata
-        this.trackerPoserPacket = new EntityTrackerUpdateS2CPacket(this.getId(), this.getDataTracker(), true);
+        this.trackerPoserPacket = new EntityTrackerUpdateS2CPacket(this.getId(), this.getDataTracker().getChangedEntries());
     }
 
     /**
@@ -167,7 +166,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
             p.networkHandler.sendPacket(this.despawnPoserPacket);
             if(p != player && ConfigManager.getConfig().strongly_remove_players){
                 p.networkHandler.sendPacket(new PlayerSpawnS2CPacket(player));
-                p.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true));
+                p.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker().getChangedEntries()));
             }
         });
 
@@ -322,7 +321,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
             if(p != player && ConfigManager.getConfig().strongly_remove_players) {
                 p.networkHandler.sendPacket(new PlayerSpawnS2CPacket(player));
-                p.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true));
+                p.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker().getChangedEntries()));
             }
         });
 

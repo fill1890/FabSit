@@ -17,7 +17,7 @@ public class SpinningEntity extends PosingEntity {
         // set spinning state
         this.getDataTracker().set(getLIVING_FLAGS(), (byte) 0x04);
         // refresh data packet
-        this.trackerPoserPacket = new EntityTrackerUpdateS2CPacket(this.getId(), this.getDataTracker(), true);
+        this.trackerPoserPacket = new EntityTrackerUpdateS2CPacket(this.getId(), this.getDataTracker().getChangedEntries());
 
         this.pivotPacket = new EntityS2CPacket.RotateAndMoveRelative(this.getId(), (short) 0, (short) 0, (short) 0, (byte) 0, (byte) (-90.0f * 256.0f / 360.0f), true);
     }

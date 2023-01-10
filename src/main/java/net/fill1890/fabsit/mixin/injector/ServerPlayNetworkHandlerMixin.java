@@ -1,7 +1,5 @@
 package net.fill1890.fabsit.mixin.injector;
 
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.config.ConfigManager;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
@@ -74,7 +72,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
     private void fakeChair(Packet<?> packet, PacketCallbacks callbacks, CallbackInfo ci) {
 
         // check for spawn packets, then spawn packets for the poser
-        if(packet instanceof EntitySpawnS2CPacket sp && sp.getEntityTypeId() == FabSit.RAW_CHAIR_ENTITY_TYPE) {
+        if(packet instanceof EntitySpawnS2CPacket sp && sp.getEntityType() == FabSit.RAW_CHAIR_ENTITY_TYPE) {
 
             // if fabsit loaded, replace with the chair entity to hide horse hearts
             if (ConfigManager.loadedPlayers.contains(connection.getAddress())) {

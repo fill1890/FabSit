@@ -8,9 +8,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.World;
 
 public class ChairEntity extends Entity {
@@ -23,7 +25,7 @@ public class ChairEntity extends Entity {
 
     public static EntityType<ChairEntity> register() {
         return Registry.register(
-                Registry.ENTITY_TYPE,
+                Registries.ENTITY_TYPE,
                 new Identifier(FabSit.MOD_ID, ENTITY_ID),
                 FabricEntityTypeBuilder.create(SpawnGroup.MISC, ChairEntity::new).dimensions(DIMENSIONS).build()
         );
@@ -39,7 +41,7 @@ public class ChairEntity extends Entity {
     protected void writeCustomDataToNbt(NbtCompound nbt) {}
 
     @Override
-    public Packet<?> createSpawnPacket() {
+    public Packet<ClientPlayPacketListener> createSpawnPacket() {
         return new EntitySpawnS2CPacket(this);
     }
 }
